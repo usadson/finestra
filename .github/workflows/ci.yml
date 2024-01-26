@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest macos-latest]
         profile: [dev, release]
 
     runs-on: ${{ matrix.os }}
@@ -27,4 +27,4 @@ jobs:
       run: cargo build --verbose --locked --profile ${{ matrix.profile }}
 
     - name: Test
-      run: cargo test --verbose --locked --profile ${{ matrix.profile }} 
+      run: cargo test --verbose --locked --profile ${{ matrix.profile }}
