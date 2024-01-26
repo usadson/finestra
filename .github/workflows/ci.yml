@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        profile: [dev, release]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: Swatinem/rust-cache@v2
+
+    - name: Build
+      run: cargo build --verbose --locked --profile ${{ matrix.profile }}
+
+    - name: Test
+      run: cargo test --verbose --locked --profile ${{ matrix.profile }} 
