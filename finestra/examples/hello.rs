@@ -1,8 +1,6 @@
-# Finestra
-Proof of Concept for a cross-platform UI library. Written in Rust.
+// Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
+// All Rights Reserved.
 
-## Example
-```rs
 use finestra::{App, AppDelegate, Label};
 
 #[derive(Default)]
@@ -15,7 +13,6 @@ impl AppDelegate for Application {
 }
 
 fn main() {
-    let app = App::new(Application::default());
-    app.run();
+    App::new(Application::default())
+        .run();
 }
-```

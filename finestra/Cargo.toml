@@ -7,3 +7,8 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+euclid = "0.22"
+thiserror = "1"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+cacao = { version = "0.3", features = ["appkit"] }
