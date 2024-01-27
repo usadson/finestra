@@ -23,6 +23,8 @@ jobs:
 
     - uses: Swatinem/rust-cache@v2
 
+    - run: rustup update stable && rustup default stable
+
     - name: Build
       run: cargo build --verbose --locked --profile ${{ matrix.profile }}
 
