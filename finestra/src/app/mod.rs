@@ -1,7 +1,7 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use crate::{macos, View, WindowConfiguration};
+use crate::{View, WindowConfiguration};
 
 /// This is the main entrypoint to the framework.
 ///
@@ -28,7 +28,7 @@ impl<Delegate> App<Delegate>
 
     pub fn run(self) -> ! {
         #[cfg(target_os = "macos")]
-        { macos::run_app(self) }
+        { crate::platform::macos::run_app(self) }
 
         #[cfg(not(target_os = "macos"))]
         { panic!("Invalid platform") }

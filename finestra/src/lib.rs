@@ -16,6 +16,5 @@ mod window;
 
 pub use self::app::*;
 pub use self::error::*;
-pub(crate) use self::platform::*;
 pub use self::views::*;
 pub use self::window::*;
