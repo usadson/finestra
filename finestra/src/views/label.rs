@@ -6,6 +6,7 @@ use crate::View;
 /// A [`View`] that displays text.
 ///
 /// ```
+/// # use finestra::Label;
 /// let label = Label::new("This is some text");
 /// let label = Label::new(format!("What is 2 + 2? Correct, {}!", 2 + 2));
 /// ```
