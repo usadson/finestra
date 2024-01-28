@@ -1,8 +1,10 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
+mod button;
 mod label;
 
+pub use self::button::Button;
 pub use self::label::Label;
 
 /// A generic graphical component.
