@@ -2,6 +2,7 @@
 // All Rights Reserved.
 
 mod dynamic_wrapper;
+pub(crate) mod resources;
 
 use std::cell::RefCell;
 use std::rc::Rc;
