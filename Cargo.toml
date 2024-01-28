@@ -11,3 +11,4 @@ version = "0.1.0"
 authors = ["Tristan Gerritsen"]
 license = "Apache-2.0"
 license-file = "COPYING"
+description = "Cross Platform Native UI Framework"
