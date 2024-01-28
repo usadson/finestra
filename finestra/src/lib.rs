@@ -11,10 +11,12 @@ pub use euclid;
 mod app;
 mod error;
 mod platform;
+mod resources;
 mod views;
 mod window;
 
 pub use self::app::*;
 pub use self::error::*;
+pub use self::resources::*;
 pub use self::views::*;
 pub use self::window::*;
