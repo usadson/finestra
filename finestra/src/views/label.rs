@@ -1,7 +1,7 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use crate::{Color, View};
+use crate::{event::EventHandlerMap, AppDelegate, Color, View};
 
 /// A [`View`] that displays text.
 ///
@@ -10,13 +10,16 @@ use crate::{Color, View};
 /// let label = Label::new("This is some text");
 /// let label = Label::new(format!("What is 2 + 2? Correct, {}!", 2 + 2));
 /// ```
-pub struct Label {
+pub struct Label<State> {
     text: String,
     text_color: Color,
     background_color: Color,
+
+    #[allow(unused)]
+    event_handler_map: EventHandlerMap<State>,
 }
 
-impl Label {
+impl<State> Label<State> {
     /// Creates a new [`Label`] with the associated string.
     #[must_use]
     pub fn new(text: impl Into<String>) -> Self {
@@ -24,6 +27,7 @@ impl Label {
             text: text.into(),
             text_color: Color::default(),
             background_color: Color::default(),
+            event_handler_map: Default::default(),
         }
     }
 
@@ -71,20 +75,21 @@ impl Label {
     }
 }
 
-impl View for Label {
+impl<Delegate, State> View<Delegate, State> for Label<State>
+        where Delegate: AppDelegate<State> {
     #[cfg(target_os = "macos")]
-    fn build_native(&self) -> crate::platform::macos::DynamicViewWrapper {
+    fn build_native(&mut self, _tree: &mut crate::platform::macos::state::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
         use crate::platform::macos::resources::ToCacao;
 
         let label = cacao::text::Label::new();
         label.set_text(&self.text);
         label.set_font(&cacao::text::Font::system(30.));
 
-        if let Some(color) = self.color().to_cacao() {
+        if let Some(color) = self.text_color.to_cacao() {
             label.set_text_color(color);
         }
 
-        if let Some(color) = self.background_color().to_cacao() {
+        if let Some(color) = self.background_color.to_cacao() {
             label.set_background_color(color);
         }
 

@@ -8,6 +8,7 @@ license.workspace = true
 description.workspace = true
 
 [dependencies]
+dashmap = "5"
 euclid = "0.22"
 thiserror = "1"
 

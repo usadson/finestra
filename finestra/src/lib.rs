@@ -10,13 +10,16 @@ pub use euclid;
 
 mod app;
 mod error;
+mod event;
 mod platform;
 mod resources;
+mod state;
 mod views;
 mod window;
 
 pub use self::app::*;
 pub use self::error::*;
 pub use self::resources::*;
+pub use self::state::*;
 pub use self::views::*;
 pub use self::window::*;
