@@ -34,8 +34,8 @@ impl<State> Button<State> {
     }
 }
 
-#[cfg(target_os = "macos")]
 impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State> {
+    #[cfg(target_os = "macos")]
     fn build_native(&mut self, tree: &mut crate::platform::macos::state::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
         use cacao::appkit::App;
         use crate::platform::macos::{
