@@ -18,4 +18,6 @@ cacao = { version = "0.3", features = ["appkit"] }
 [target.'cfg(target_os = "windows")'.dependencies]
 windows = { version = "0.52", features = [
     "Win32_Foundation",
+    "Win32_UI",
+    "Win32_UI_WindowsAndMessaging",
 ] }
