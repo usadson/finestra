@@ -2,14 +2,24 @@
 // All Rights Reserved.
 
 mod dispatch;
+mod window;
 mod wrapper;
 
 use crate::{App, AppDelegate};
 
-pub fn run_app<Delegate, State>(app: App<Delegate, State>) -> !
+use self::window::Window;
+
+pub fn run_app<Delegate, State>(mut app: App<Delegate, State>) -> !
         where Delegate: AppDelegate<State> + 'static,
               State: 'static {
-    _ = app;
+    app.delegate.did_launch();
+
+    let config = app.delegate.configure_main_window();
+    let window = Window::new(config);
+
+    app.delegate.will_show_window();
+    window.show();
+    window.update();
 
     dispatch::run_message_pump();
 }
