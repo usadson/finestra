@@ -17,8 +17,10 @@
 /// These colors can be set on [`Views`](crate::View) using their respective
 /// methods. For example:
 /// ```
+/// # // This is usually used in a context where the `State` generic parameter
+/// # // is inferred by the compiler.
+/// # type Label = finestra::Label<()>;
 /// # use finestra::Color;
-/// # use finestra::Label;
 /// # use finestra::SystemColor;
 /// let label = Label::new("Hello, Red World!")
 ///         .with_color(Color::system(SystemColor::Red));

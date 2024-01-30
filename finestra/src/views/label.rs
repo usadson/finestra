@@ -6,11 +6,13 @@ use crate::{event::EventHandlerMap, AppDelegate, Color, View};
 /// A [`View`] that displays text.
 ///
 /// ```
-/// # use finestra::Label;
+/// # // This is usually used in a context where the `State` generic parameter
+/// # // is inferred by the compiler.
+/// # type Label = finestra::Label<()>;
 /// let label = Label::new("This is some text");
 /// let label = Label::new(format!("What is 2 + 2? Correct, {}!", 2 + 2));
 /// ```
-pub struct Label<State> {
+pub struct Label<State=()> {
     text: String,
     text_color: Color,
     background_color: Color,

@@ -6,8 +6,10 @@ use crate::{event::EventHandlerMap, AppDelegate, StateOrRaw, View};
 /// A [`View`] that displays text and is clickable.
 ///
 /// ```
-/// # use finestra::Button;
-/// let label = Button::new("Click Me");
+/// # // This is usually used in a context where the `State` generic parameter
+/// # // is inferred by the compiler.
+/// # type Button = finestra::Button<()>;
+/// let button = Button::new("Click Me");
 /// ```
 pub struct Button<State> {
     text: StateOrRaw<String>,
