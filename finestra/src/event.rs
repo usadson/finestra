@@ -4,7 +4,9 @@
 use std::sync::Arc;
 use dashmap::DashMap;
 
-type EventHandlerCallback<State> = dyn Fn(&mut State);
+use crate::Window;
+
+type EventHandlerCallback<State> = dyn Fn(&mut State, Window);
 type EventHandler<State> = Option<Box<EventHandlerCallback<State>>>;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]

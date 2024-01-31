@@ -1,7 +1,7 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use crate::{View, WindowConfiguration};
+use crate::{View, Window, WindowConfiguration};
 
 /// This is the main entrypoint to the framework.
 ///
@@ -53,12 +53,13 @@ impl<Delegate, State> App<Delegate, State>
 
 /// A platform-agnostic delegation trait, which will be used as a facade for
 /// these native frameworks.
+#[allow(unused_variables)]
 pub trait AppDelegate<State = ()> {
     /// Called when the underlying native framework finished launching.
     fn did_launch(&mut self) {}
 
     /// Called when the underlying native framework finished launching.
-    fn will_show_window(&mut self) {}
+    fn will_show_window(&mut self, window: Window) {}
 
     /// Called when the main window must be configured. By overloading this
     /// function, you can - for example - give the window a name.
@@ -66,8 +67,7 @@ pub trait AppDelegate<State = ()> {
         Default::default()
     }
 
-    #[allow(unused_variables)]
-    fn make_content_view(&mut self, state: &mut State) -> impl View<Self, State>
+    fn make_content_view(&mut self, state: &mut State, window: Window) -> impl View<Self, State>
             where Self: Sized {}
 }
 

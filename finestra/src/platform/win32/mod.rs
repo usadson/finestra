@@ -6,6 +6,7 @@ mod window;
 mod wrapper;
 
 use crate::{App, AppDelegate};
+use std::rc::Rc;
 
 use self::window::Window;
 
@@ -16,8 +17,9 @@ pub fn run_app<Delegate, State>(mut app: App<Delegate, State>) -> !
 
     let config = app.delegate.configure_main_window();
     let window = Window::new(config);
+    let delegator = crate::Window::new(Rc::new(window.clone()));
 
-    app.delegate.will_show_window();
+    app.delegate.will_show_window(delegator);
     window.show();
     window.update();
 

@@ -27,6 +27,7 @@ use windows::Win32::{
 
 use crate::WindowConfiguration;
 
+#[derive(Clone)]
 pub struct Window {
     hwnd: HWND,
 }
@@ -48,6 +49,12 @@ impl Window {
         unsafe {
             UpdateWindow(self.hwnd);
         }
+    }
+}
+
+impl crate::WindowDelegator for Window {
+    fn create_dialog(&self, text: std::borrow::Cow<'static, str>) -> crate::DialogBuilder {
+        todo!()
     }
 }
 

@@ -119,6 +119,7 @@ dependencies = [
  "cacao",
  "dashmap",
  "euclid",
+ "objc_id",
  "thiserror",
  "windows",
 ]

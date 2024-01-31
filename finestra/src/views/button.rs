@@ -1,7 +1,7 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use crate::{event::EventHandlerMap, AppDelegate, StateOrRaw, View};
+use crate::{event::EventHandlerMap, AppDelegate, StateOrRaw, View, Window};
 
 /// A [`View`] that displays text and is clickable.
 ///
@@ -26,17 +26,18 @@ impl<State> Button<State> {
         }
     }
 
-    pub fn set_on_click(&mut self, action: impl Fn(&mut State) + 'static) {
+    pub fn set_on_click(&mut self, action: impl Fn(&mut State, Window) + 'static) {
         self.event_handler_map.click = Some(Box::new(action));
     }
 
-    pub fn with_on_click(mut self, action: impl Fn(&mut State) + 'static) -> Self {
+    pub fn with_on_click(mut self, action: impl Fn(&mut State, Window) + 'static) -> Self {
         self.event_handler_map.click = Some(Box::new(action));
         self
     }
 }
 
-impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State> {
+impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State>
+        where Delegate: 'static, State: 'static {
     #[cfg(target_os = "macos")]
     fn build_native(&mut self, tree: &mut crate::platform::macos::state::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
         use cacao::appkit::App;

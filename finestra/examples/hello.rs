@@ -7,7 +7,7 @@ use finestra::*;
 struct Application;
 
 impl AppDelegate for Application {
-    fn make_content_view(&mut self, _: &mut ()) -> impl finestra::View<Self> {
+    fn make_content_view(&mut self, _: &mut (), _: Window) -> impl finestra::View<Self> {
         Label::new("Hello, world!")
             .with_color(Color::system(SystemColor::Teal))
     }

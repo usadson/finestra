@@ -14,6 +14,7 @@ thiserror = "1"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 cacao = { version = "0.3", features = ["appkit"] }
+objc_id = "0.1.1"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 windows = { version = "0.52", features = [
