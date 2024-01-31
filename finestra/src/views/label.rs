@@ -80,7 +80,7 @@ impl<State> Label<State> {
 impl<Delegate, State> View<Delegate, State> for Label<State>
         where Delegate: AppDelegate<State> {
     #[cfg(target_os = "macos")]
-    fn build_native(&mut self, _tree: &mut crate::platform::macos::state::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
+    fn build_native(&mut self, _tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
         use crate::platform::macos::resources::ToCacao;
 
         let label = cacao::text::Label::new();
@@ -96,5 +96,14 @@ impl<Delegate, State> View<Delegate, State> for Label<State>
         }
 
         label.into()
+    }
+
+    /// Internal API: creates a native view (for Win32).
+    #[cfg(target_os = "windows")]
+    fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::win32::view::WinView {
+        use crate::platform::win32::view::{WinView, WinViewKind};
+
+        _ = &self.text;
+        WinView::new(tree.exchange_events_for_id(Default::default()), WinViewKind::Empty)
     }
 }

@@ -17,13 +17,25 @@ pub trait View<Delegate, State=()>
         where Delegate: AppDelegate<State> {
     /// Internal API: creates a native view (for macOS).
     #[cfg(target_os = "macos")]
-    fn build_native(&mut self, tree: &mut crate::platform::macos::state::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper;
+    fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper;
+
+    /// Internal API: creates a native view (for Win32).
+    #[cfg(target_os = "windows")]
+    fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::win32::view::WinView;
 }
 
 impl<Delegate, State> View<Delegate, State> for ()
         where Delegate: AppDelegate<State> {
     #[cfg(target_os = "macos")]
-    fn build_native(&mut self, _tree: &mut crate::platform::macos::state::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
+    fn build_native(&mut self, _tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
         cacao::text::Label::new().into()
+    }
+
+    /// Internal API: creates a native view (for Win32).
+    #[cfg(target_os = "windows")]
+    fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::win32::view::WinView {
+        use crate::platform::win32::view::{WinView, WinViewKind};
+
+        WinView::new(tree.exchange_events_for_id(Default::default()), WinViewKind::Empty)
     }
 }

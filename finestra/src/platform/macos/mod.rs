@@ -17,8 +17,7 @@ use cacao::appkit::window::{Window as CacaoWindow, WindowDelegate};
 use cacao::layout::LayoutConstraint;
 use cacao::notification_center::Dispatcher;
 
-use crate::event::EventHandlerMapRegistry;
-use crate::platform::macos::state::ViewTree;
+use crate::event::{EventHandlerMapRegistry, ViewTree};
 use crate::{App, AppDelegate, DialogBuilder, View, Window, WindowDelegator};
 pub(crate) use self::dynamic_wrapper::DynamicViewWrapper;
 use self::extensions::WindowExtensions;
