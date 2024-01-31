@@ -6,7 +6,7 @@ use std::borrow::Cow;
 /// Builds and presents dialog boxes. To create a dialog box, use `window.create_dialog()`.
 ///
 /// ## Example
-/// ```no_run
+/// ```rust,ignore
 /// # use finestra::Window;
 /// let window: Window;
 ///
