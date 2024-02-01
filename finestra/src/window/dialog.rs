@@ -27,6 +27,13 @@ impl DialogBuilder {
 
     /// Sets the title of the dialog. This is initially set to the title of the
     /// window.
+    pub fn kind(self, kind: DialogKind) -> Self {
+        self.inner.set_kind(kind);
+        self
+    }
+
+    /// Sets the title of the dialog. This is initially set to the title of the
+    /// window.
     pub fn title(self, title: impl Into<Cow<'static, str>>) -> Self {
         self.inner.set_title(title.into());
         self
@@ -38,7 +45,28 @@ impl DialogBuilder {
     }
 }
 
+#[derive(Clone, Debug, Default)]
+pub enum DialogKind {
+    /// A message box without a specific icon or accessibility information.
+    #[default]
+    Normal,
+
+    /// A message box that tells the user about an event that occurred, or shows
+    /// them information about a specific action.
+    Informational,
+
+    /// A message box that tells the user about a possible mistake the user or
+    /// application made.
+    Warning,
+
+    /// A message box that tells the user about an (unrecoverable) error that
+    /// the application encountered.
+    Error,
+}
+
 pub(crate) trait DialogApi {
+    fn set_kind(&self, kind: DialogKind);
+    fn set_text(&self, text: Cow<'static, str>);
     fn set_title(&self, title: Cow<'static, str>);
     fn show(&self);
 }

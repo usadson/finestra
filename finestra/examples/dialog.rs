@@ -12,6 +12,7 @@ impl AppDelegate for Application {
             .with_on_click(|_, window: Window| {
                 window.create_dialog("You are awesome :)")
                         .title("Good Job!")
+                        .kind(DialogKind::Warning)
                         .show();
             })
     }

@@ -21,7 +21,7 @@ use crate::event::{EventHandlerMapRegistry, ViewTree};
 use crate::{App, AppDelegate, DialogBuilder, View, Window, WindowDelegator};
 pub(crate) use self::dynamic_wrapper::DynamicViewWrapper;
 use self::extensions::WindowExtensions;
-use self::nsalert::DialogImpl;
+use self::nsalert::NSAlert;
 use self::state::Event;
 
 
@@ -168,6 +168,6 @@ struct MacOSWindowDelegator<CacaoDelegate> {
 
 impl<CacaoDelegate> WindowDelegator for MacOSWindowDelegator<CacaoDelegate> {
     fn create_dialog(&self, text: Cow<'static, str>) -> crate::DialogBuilder {
-        DialogBuilder::new(Box::new(DialogImpl::new(text, self.window.get_title())))
+        DialogBuilder::new(Box::new(NSAlert::with(text, self.window.get_title())))
     }
 }

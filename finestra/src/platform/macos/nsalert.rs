@@ -2,7 +2,6 @@
 // All Rights Reserved.
 
 use std::borrow::Cow;
-use std::cell::Cell;
 
 use cacao::foundation::NSString;
 
@@ -10,53 +9,69 @@ use objc_id::Id;
 use cacao::objc::runtime::Object;
 use cacao::objc::{class, msg_send, sel, sel_impl};
 
-use crate::DialogApi;
-
-pub(crate) struct DialogImpl {
-    pub title: Cell<Cow<'static, str>>,
-    pub text: Cow<'static, str>,
-}
-
-impl DialogImpl {
-    pub fn new(text: Cow<'static, str>, title: String) -> Self {
-        Self {
-            title: Cell::new(Cow::Owned(title)),
-            text,
-        }
-    }
-}
-
-impl DialogApi for DialogImpl {
-    fn set_title(&self, title: Cow<'static, str>) {
-        self.title.set(title);
-    }
-
-    fn show(&self) {
-        let alert = NSAlert::new(self.title.take().as_ref(), &self.text);
-        alert.show();
-    }
-}
+use crate::{DialogApi, DialogKind};
 
 pub(crate) struct NSAlert(Id<Object>);
 
 impl NSAlert {
-    pub fn new(title: &str, message: &str) -> Self {
-        let title = NSString::new(title);
-        let message = NSString::new(message);
-        let ok = NSString::new("OK");
-
+    pub fn new() -> Self {
         Self(unsafe {
             let alert: cacao::foundation::id = msg_send![class!(NSAlert), new];
-            let _: () = msg_send![alert, setMessageText: title];
-            let _: () = msg_send![alert, setInformativeText: message];
-            let _: () = msg_send![alert, addButtonWithTitle: ok];
             Id::from_ptr(alert)
         })
     }
 
-    pub fn show(&self) {
+    pub fn with(text: Cow<'static, str>, title: String) -> Self {
+        let this = Self::new();
+        this.set_title(title.into());
+        this.set_text(text);
+        this
+    }
+}
+
+impl DialogApi for NSAlert {
+    fn set_title(&self, title: Cow<'static, str>) {
+        let title = NSString::new(&title);
+        unsafe {
+            let _: () = msg_send![self.0, setMessageText: title];
+        }
+    }
+
+    fn set_text(&self, text: Cow<'static, str>) {
+        let text = NSString::new(&text);
+        unsafe {
+            let _: () = msg_send![self.0, setInformativeText: text];
+        }
+    }
+
+    fn show(&self) {
         unsafe {
             let _: () = msg_send![&*self.0, runModal];
+        }
+    }
+
+    fn set_kind(&self, kind: crate::DialogKind) {
+        let style: NSAlertStyle = kind.into();
+        let style = style as u32;
+        unsafe {
+            let _: () = msg_send![self.0, setAlertStyle: style];
+        }
+    }
+}
+
+enum NSAlertStyle {
+    Warning = 0,
+    Informational = 1,
+    Critical = 2,
+}
+
+impl From<DialogKind> for NSAlertStyle {
+    fn from(value: DialogKind) -> Self {
+        match value {
+            DialogKind::Normal => Self::Informational,
+            DialogKind::Error => Self::Critical,
+            DialogKind::Informational => Self::Informational,
+            DialogKind::Warning => Self::Warning,
         }
     }
 }
