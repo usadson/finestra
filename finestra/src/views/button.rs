@@ -1,7 +1,7 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use crate::{event::EventHandlerMap, AppDelegate, StateOrRaw, View, Window};
+use crate::{event::EventHandlerMap, AppDelegate, Color, StateOrRaw, View, Window};
 
 /// A [`View`] that displays text and is clickable.
 ///
@@ -12,7 +12,9 @@ use crate::{event::EventHandlerMap, AppDelegate, StateOrRaw, View, Window};
 /// let button = Button::new("Click Me");
 /// ```
 pub struct Button<State> {
-    text: StateOrRaw<String>,
+    pub(crate) text: StateOrRaw<String>,
+    pub(crate) text_color: StateOrRaw<Color>,
+    pub(crate) background_color: StateOrRaw<Color>,
     event_handler_map: EventHandlerMap<State>,
 }
 
@@ -22,6 +24,8 @@ impl<State> Button<State> {
     pub fn new(text: impl Into<StateOrRaw<String>>) -> Self {
         Self {
             text: text.into(),
+            text_color: StateOrRaw::Raw(Color::default()),
+            background_color: StateOrRaw::Raw(Color::default()),
             event_handler_map: Default::default(),
         }
     }
@@ -34,6 +38,36 @@ impl<State> Button<State> {
         self.event_handler_map.click = Some(Box::new(action));
         self
     }
+
+    /// Returns `Self` with the given text `color`.
+    #[must_use]
+    pub fn with_text_color(self, color: impl Into<StateOrRaw<Color>>) -> Self {
+        Self {
+            text_color: color.into(),
+            ..self
+        }
+    }
+
+    /// Returns `Self` with the given background `color`.
+    #[must_use]
+    pub fn with_background_color(self, color: impl Into<StateOrRaw<Color>>) -> Self {
+        Self {
+            background_color: color.into(),
+            ..self
+        }
+    }
+
+    /// Sets the text color of the [`Button`]. Use [`Button::with_text_color()`]
+    /// to avoid making a `mut` variable.
+    pub fn set_text_color(&mut self, color: impl Into<StateOrRaw<Color>>) {
+        self.text_color = color.into();
+    }
+
+    /// Sets the background color of the [`Button`]. Use
+    /// [`Button::with_background_color()`] to avoid making a `mut` variable.
+    pub fn set_background_color(&mut self, color: impl Into<StateOrRaw<Color>>) {
+        self.background_color = color.into();
+    }
 }
 
 impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State>
@@ -42,11 +76,8 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State
     fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
         use cacao::appkit::App;
         use crate::platform::macos::{
-            MacOSDelegate,
-            state::Event,
+            resources::ToCacao, state::Event, MacOSDelegate
         };
-
-        use cacao::{foundation::NSString, objc::{msg_send, sel, sel_impl}};
 
         let map = std::mem::take(&mut self.event_handler_map);
         let id = tree.exchange_events_for_id(map);
@@ -55,16 +86,15 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State
             cacao::button::Button::new(text)
         });
 
-        let objc = button.objc.clone();
-        if let StateOrRaw::State(text_state) = &self.text {
-            text_state.add_listener(move |val| {
-                let s = NSString::new(val);
-
-                objc.with_mut(|obj| unsafe {
-                    let _: () = msg_send![obj, setTitle:&*s];
-                });
-            });
+        if let Some(color) = self.text_color.clone_inner().to_cacao() {
+            button.set_text_color(color);
         }
+
+        if let Some(color) = self.background_color.clone_inner().to_cacao() {
+            button.set_background_color(color);
+        }
+
+        crate::platform::macos::state::attach_button_state(&self, &button);
 
         button.set_action(move || {
             App::<MacOSDelegate<Delegate, State>, Event>::dispatch_main(Event::ButtonClicked(id));

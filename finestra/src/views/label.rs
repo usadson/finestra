@@ -1,7 +1,7 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use crate::{event::EventHandlerMap, AppDelegate, Color, View};
+use crate::{event::EventHandlerMap, AppDelegate, Color, StateOrRaw, View};
 
 /// A [`View`] that displays text.
 ///
@@ -13,9 +13,9 @@ use crate::{event::EventHandlerMap, AppDelegate, Color, View};
 /// let label = Label::new(format!("What is 2 + 2? Correct, {}!", 2 + 2));
 /// ```
 pub struct Label<State=()> {
-    text: String,
-    text_color: Color,
-    background_color: Color,
+    pub(crate) text: StateOrRaw<String>,
+    pub(crate) text_color: StateOrRaw<Color>,
+    pub(crate) background_color: StateOrRaw<Color>,
 
     #[allow(unused)]
     event_handler_map: EventHandlerMap<State>,
@@ -26,54 +26,41 @@ impl<State> Label<State> {
     #[must_use]
     pub fn new(text: impl Into<String>) -> Self {
         Self {
-            text: text.into(),
-            text_color: Color::default(),
-            background_color: Color::default(),
+            text: text.into().into(),
+            text_color: StateOrRaw::Raw(Color::default()),
+            background_color: StateOrRaw::Raw(Color::default()),
             event_handler_map: Default::default(),
         }
     }
 
     /// Returns `Self` with the given `color`.
     #[must_use]
-    pub fn with_color(self, color: Color) -> Self {
+    pub fn with_color(self, color: impl Into<StateOrRaw<Color>>) -> Self {
         Self {
-            text_color: color,
+            text_color: color.into(),
             ..self
         }
     }
 
     /// Returns `Self` with the given background `color`.
     #[must_use]
-    pub fn with_background_color(self, color: Color) -> Self {
+    pub fn with_background_color(self, color: impl Into<StateOrRaw<Color>>) -> Self {
         Self {
-            background_color: color,
+            background_color: color.into(),
             ..self
         }
     }
 
-    #[must_use]
-    #[inline]
-    pub const fn color(&self) -> &Color {
-        &self.text_color
-    }
-
     /// Sets the color of the [`Label`]. Use [`Label::with_color()`] to avoid
     /// making a `mut` variable.
-    pub fn set_color(&mut self, color: Color) {
-        self.text_color = color;
-    }
-
-    /// Returns the background color.
-    #[must_use]
-    #[inline]
-    pub const fn background_color(&self) -> &Color {
-        &self.background_color
+    pub fn set_color(&mut self, color: impl Into<StateOrRaw<Color>>) {
+        self.text_color = color.into();
     }
 
     /// Sets the background color of the [`Label`]. Use
     /// [`Label::with_background_color()`] to avoid making a `mut` variable.
-    pub fn set_background_color(&mut self, color: Color) {
-        self.background_color = color;
+    pub fn set_background_color(&mut self, color: impl Into<StateOrRaw<Color>>) {
+        self.background_color = color.into();
     }
 }
 
@@ -84,17 +71,18 @@ impl<Delegate, State> View<Delegate, State> for Label<State>
         use crate::platform::macos::resources::ToCacao;
 
         let label = cacao::text::Label::new();
-        label.set_text(&self.text);
+        label.set_text(&self.text.clone_inner());
         label.set_font(&cacao::text::Font::system(30.));
 
-        if let Some(color) = self.text_color.to_cacao() {
+        if let Some(color) = self.text_color.clone_inner().to_cacao() {
             label.set_text_color(color);
         }
 
-        if let Some(color) = self.background_color.to_cacao() {
+        if let Some(color) = self.background_color.clone_inner().to_cacao() {
             label.set_background_color(color);
         }
 
+        crate::platform::macos::state::attach_label_state(&self, &label);
         label.into()
     }
 

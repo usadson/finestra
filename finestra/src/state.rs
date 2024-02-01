@@ -3,6 +3,9 @@
 
 use std::{fmt::Debug, sync::{Arc, RwLock}};
 
+use crate::Color;
+
+pub type ColorValue = State<Color>;
 pub type TextValue = State<String>;
 type Callback<T> = dyn Fn(&T);
 
@@ -56,6 +59,11 @@ impl<T> StateOrRaw<T> {
             Self::Raw(t) => f(t),
             Self::State(t) => t.with(f),
         }
+    }
+
+    pub fn clone_inner(&self) -> T
+            where T: Clone {
+        self.with(Clone::clone)
     }
 }
 
