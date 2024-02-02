@@ -1,7 +1,9 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use crate::{event::EventHandlerMap, AppDelegate, Color, StateOrRaw, View};
+use crate::{event::EventHandlerMap, AppDelegate, Color, StateOrRaw, View, ViewBase};
+
+use super::base::BaseView;
 
 /// A [`View`] that displays text.
 ///
@@ -13,6 +15,7 @@ use crate::{event::EventHandlerMap, AppDelegate, Color, StateOrRaw, View};
 /// let label = Label::new(format!("What is 2 + 2? Correct, {}!", 2 + 2));
 /// ```
 pub struct Label<State=()> {
+    base: ViewBase,
     pub(crate) text: StateOrRaw<String>,
     pub(crate) text_color: StateOrRaw<Color>,
     pub(crate) background_color: StateOrRaw<Color>,
@@ -26,6 +29,7 @@ impl<State> Label<State> {
     #[must_use]
     pub fn new(text: impl Into<String>) -> Self {
         Self {
+            base: ViewBase::default(),
             text: text.into().into(),
             text_color: StateOrRaw::Raw(Color::default()),
             background_color: StateOrRaw::Raw(Color::default()),
@@ -61,6 +65,16 @@ impl<State> Label<State> {
     /// [`Label::with_background_color()`] to avoid making a `mut` variable.
     pub fn set_background_color(&mut self, color: impl Into<StateOrRaw<Color>>) {
         self.background_color = color.into();
+    }
+}
+
+impl<State> BaseView for Label<State> {
+    fn base(&self) -> &ViewBase {
+        &self.base
+    }
+
+    fn base_mut(&mut self) -> &mut ViewBase {
+        &mut self.base
     }
 }
 

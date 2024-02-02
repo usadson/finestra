@@ -1,11 +1,13 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
+mod base;
 mod button;
 mod label;
 
 use crate::AppDelegate;
 
+pub use self::base::*;
 pub use self::button::Button;
 pub use self::label::Label;
 

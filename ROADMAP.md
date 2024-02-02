@@ -43,6 +43,7 @@
 - [x] Setting foreground color of text components
 - [ ] Setting background color
 - [ ] Setting font/typeface
+- [x] Tool Tips
 
 #### 1.3.1. Theming
 - [ ] Honor System Theme by Default

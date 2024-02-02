@@ -1,7 +1,9 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use crate::{event::EventHandlerMap, AppDelegate, Color, StateOrRaw, View, Window};
+use crate::{event::EventHandlerMap, AppDelegate, Color, StateOrRaw, View, ViewBase, Window};
+
+use super::base::BaseView;
 
 /// A [`View`] that displays text and is clickable.
 ///
@@ -12,6 +14,7 @@ use crate::{event::EventHandlerMap, AppDelegate, Color, StateOrRaw, View, Window
 /// let button = Button::new("Click Me");
 /// ```
 pub struct Button<State> {
+    pub(crate) base: ViewBase,
     pub(crate) text: StateOrRaw<String>,
     pub(crate) text_color: StateOrRaw<Color>,
     pub(crate) background_color: StateOrRaw<Color>,
@@ -23,6 +26,7 @@ impl<State> Button<State> {
     #[must_use]
     pub fn new(text: impl Into<StateOrRaw<String>>) -> Self {
         Self {
+            base: ViewBase::default(),
             text: text.into(),
             text_color: StateOrRaw::Raw(Color::default()),
             background_color: StateOrRaw::Raw(Color::default()),
@@ -67,6 +71,16 @@ impl<State> Button<State> {
     /// [`Button::with_background_color()`] to avoid making a `mut` variable.
     pub fn set_background_color(&mut self, color: impl Into<StateOrRaw<Color>>) {
         self.background_color = color.into();
+    }
+}
+
+impl<State> BaseView for Button<State> {
+    fn base(&self) -> &ViewBase {
+        &self.base
+    }
+
+    fn base_mut(&mut self) -> &mut ViewBase {
+        &mut self.base
     }
 }
 

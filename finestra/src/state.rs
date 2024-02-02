@@ -48,6 +48,7 @@ impl<T> State<T> {
     }
 }
 
+#[derive(Debug)]
 pub enum StateOrRaw<T> {
     Raw(T),
     State(State<T>),
@@ -64,6 +65,13 @@ impl<T> StateOrRaw<T> {
     pub fn clone_inner(&self) -> T
             where T: Clone {
         self.with(Clone::clone)
+    }
+}
+
+impl<T> Default for StateOrRaw<T>
+       where T: Default {
+    fn default() -> Self {
+        Self::Raw(T::default())
     }
 }
 
