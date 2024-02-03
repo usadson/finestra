@@ -3,9 +3,7 @@
 
 use std::marker::PhantomData;
 
-use cacao::layout::Layout;
-
-use crate::{event::EventHandlerMap, AppDelegate, StateOrRaw, View, ViewBase};
+use crate::{AppDelegate, View, ViewBase};
 
 use super::base::BaseView;
 
@@ -19,7 +17,6 @@ pub enum StackDirection {
 ///       infer type. :)
 pub struct Stack<State, Delegate> {
     base: ViewBase,
-    event_handler_map: EventHandlerMap<State>,
     _phantom: PhantomData<Delegate>,
 
     pub(crate) direction: StackDirection,
@@ -31,7 +28,6 @@ impl<State, Delegate> Stack<State, Delegate> {
     pub fn new(direction: StackDirection) -> Self {
         Self {
             base: ViewBase::default(),
-            event_handler_map: EventHandlerMap::default(),
             _phantom: PhantomData::default(),
 
             direction,
@@ -52,7 +48,8 @@ impl<State, Delegate> Stack<State, Delegate> {
 
 impl<State, Delegate> Stack<State, Delegate>
         where Delegate: AppDelegate<State> + 'static {
-    pub fn with(self, view: impl Into<Box<dyn View<Delegate, State>>>) -> Self {
+    pub fn with(mut self, view: impl Into<Box<dyn View<Delegate, State>>>) -> Self {
+        self.children.push(view.into());
         self
     }
 }
@@ -71,12 +68,12 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Stack<State,
         where Delegate: 'static, State: 'static {
     #[cfg(target_os = "macos")]
     fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
-        use crate::platform::macos::nsstackview::{NSStackView, NSStackViewGravity};
+        use crate::platform::macos::nsstackview::NSStackView;
 
-        let view = NSStackView::new();
+        let view = NSStackView::new(self.direction);
         for child in &mut self.children {
             let comp = child.build_native(tree);
-            view.add_view(comp.objc(), NSStackViewGravity::Center);
+            view.add_view(comp.objc());
         }
 
         view.into()
