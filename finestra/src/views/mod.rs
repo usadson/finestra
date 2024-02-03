@@ -4,12 +4,14 @@
 mod base;
 mod button;
 mod label;
+mod stack;
 
 use crate::AppDelegate;
 
 pub use self::base::*;
 pub use self::button::Button;
 pub use self::label::Label;
+pub use self::stack::*;
 
 /// A generic graphical component.
 ///

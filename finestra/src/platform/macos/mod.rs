@@ -6,6 +6,7 @@ mod extensions;
 pub(crate) mod resources;
 pub(crate) mod state;
 mod nsalert;
+pub(crate) mod nsstackview;
 
 use std::borrow::Cow;
 use std::cell::RefCell;

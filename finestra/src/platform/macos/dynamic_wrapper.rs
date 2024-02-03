@@ -2,18 +2,11 @@
 // All Rights Reserved.
 
 use cacao::{
-    button::Button,
-    image::ImageView,
-    input::TextField,
-    layout::{Layout, LayoutAnchorX, LayoutAnchorY},
-    listview::{ListView, ListViewRow},
-    progress::ProgressIndicator,
-    scrollview::ScrollView,
-    select::Select,
-    switch::Switch,
-    text::Label,
-    view::View
+    button::Button, image::ImageView, input::TextField, layout::{Layout, LayoutAnchorX, LayoutAnchorY}, listview::{ListView, ListViewRow}, progress::ProgressIndicator, scrollview::ScrollView, select::Select, switch::Switch, text::Label, utils::properties::ObjcProperty, view::View
 };
+
+use super::nsstackview::NSStackView;
+
 
 /// This internal type, represents [`Layout`](cacao::layout::Layout) in an
 /// object-safe manner.
@@ -26,6 +19,7 @@ pub enum DynamicViewWrapper {
     ProgressIndicator(ProgressIndicator),
     ScrollView(ScrollView),
     Select(Select),
+    StackView(NSStackView),
     Switch(Switch),
     TextField(TextField),
     View(View),
@@ -43,6 +37,7 @@ impl DynamicViewWrapper {
             Self::ProgressIndicator(subview) => view.add_subview(subview),
             Self::ScrollView(subview) => view.add_subview(subview),
             Self::Select(subview) => view.add_subview(subview),
+            Self::StackView(subview) => subview.add_as_subview(view),
             Self::Switch(subview) => view.add_subview(subview),
             Self::TextField(subview) => view.add_subview(subview),
             Self::View(subview) => view.add_subview(subview),
@@ -59,6 +54,7 @@ impl DynamicViewWrapper {
             Self::ProgressIndicator(subview) => &subview.center_x,
             Self::ScrollView(subview) => &subview.center_x,
             Self::Select(subview) => &subview.center_x,
+            Self::StackView(subview) => &subview.center_x,
             Self::Switch(subview) => &subview.center_x,
             Self::TextField(subview) => &subview.center_x,
             Self::View(subview) => &subview.center_x,
@@ -75,9 +71,27 @@ impl DynamicViewWrapper {
             Self::ProgressIndicator(subview) => &subview.center_y,
             Self::ScrollView(subview) => &subview.center_y,
             Self::Select(subview) => &subview.center_y,
+            Self::StackView(subview) => &subview.center_y,
             Self::Switch(subview) => &subview.center_y,
             Self::TextField(subview) => &subview.center_y,
             Self::View(subview) => &subview.center_y,
+        }
+    }
+
+    pub(crate) fn objc(&self) -> &ObjcProperty {
+        match self {
+            Self::Button(subview) => &subview.objc,
+            Self::ImageView(subview) => &subview.objc,
+            Self::Label(subview) => &subview.objc,
+            Self::ListView(subview) => &subview.objc,
+            Self::ListViewRow(subview) => &subview.objc,
+            Self::ProgressIndicator(subview) => &subview.objc,
+            Self::ScrollView(subview) => &subview.objc,
+            Self::Select(subview) => &subview.objc,
+            Self::StackView(subview) => &subview.objc,
+            Self::Switch(subview) => &subview.objc,
+            Self::TextField(subview) => &subview.objc,
+            Self::View(subview) => &subview.objc,
         }
     }
 }
@@ -109,6 +123,12 @@ impl From<ListView> for DynamicViewWrapper {
 impl From<ListViewRow> for DynamicViewWrapper {
     fn from(value: ListViewRow) -> Self {
         Self::ListViewRow(value)
+    }
+}
+
+impl From<NSStackView> for DynamicViewWrapper {
+    fn from(value: NSStackView) -> Self {
+        Self::StackView(value)
     }
 }
 

@@ -125,3 +125,10 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State
         WinView::new(tree.exchange_events_for_id(Default::default()), WinViewKind::Empty)
     }
 }
+
+impl<Delegate, State> From<Button<State>> for Box<dyn View<Delegate, State>>
+        where Delegate: AppDelegate<State> + 'static, State: 'static {
+    fn from(value: Button<State>) -> Self {
+        Box::new(value)
+    }
+}

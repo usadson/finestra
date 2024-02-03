@@ -85,6 +85,13 @@ fn hook_tooltip_state(objc: &ObjcProperty, text: &StateOrRaw<String>) {
         return;
     };
 
+    text_state.with(|val| {
+        let s = NSString::new(val);
+        objc.with_mut(|obj| unsafe {
+            let _: () = msg_send![obj, setToolTip:&*s];
+        });
+    });
+
     let objc = objc.clone();
     text_state.add_listener(move |val| {
         let s = NSString::new(val);
