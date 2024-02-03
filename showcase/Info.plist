@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>en</string>
+
+        <key>CFBundleName</key>
+        <string>Finestra Showcase</string>
+
+        <key>CFBundleDisplayName</key>
+        <string>Finestra Showcase</string>
+
+        <key>CFBundleExecutable</key>
+        <string>showcase</string>
+
+        <!-- <key>CFBundleIconFile</key>
+        <string>Icon.icns</string> -->
+
+        <key>CFBundleIdentifier</key>
+        <string>com.tristangerritsen.finestra.showcase</string>
+
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
+
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+
+        <key>CFBundleSupportedPlatforms</key>
+        <array>
+            <string>MacOSX</string>
+        </array>
+
+        <key>NSHighResolutionCapable</key>
+        <true/>
+
+        <key>NSMainNibFile</key>
+        <string></string>
+
+        <key>NSRequiresAquaSystemAppearance</key>
+        <string>NO</string>
+
+        <key>NSSupportsAutomaticGraphicsSwitching</key>
+        <true />
+
+        <!--Will be automatically subsituted by ./build.sh -->
+        <key>CFBundleShortVersionString</key>
+        <string>CARGO_VERSION</string>
+
+        <key>CFBundleVersion</key>
+        <string>CARGO_VERSION</string>
+    </dict>
+</plist>
