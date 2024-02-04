@@ -29,7 +29,7 @@
 - [ ] Grid
 - [ ] Panel
 - [ ] Scroll Box
-- [ ] Stack (Horizontal, Vertical)
+- [x] Stack (Horizontal, Vertical)
 - [ ] Table
 - [ ] Tab View
 
@@ -41,7 +41,7 @@
 ### 1.3. Customization
 - [ ] Alignment
 - [x] Setting foreground color of text components
-- [ ] Setting background color
+- [x] Setting background color
 - [ ] Setting font/typeface
 - [x] Tool Tips
 
