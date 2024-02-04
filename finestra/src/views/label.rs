@@ -27,7 +27,7 @@ pub struct Label<State=()> {
 impl<State> Label<State> {
     /// Creates a new [`Label`] with the associated string.
     #[must_use]
-    pub fn new(text: impl Into<String>) -> Self {
+    pub fn new(text: impl Into<StateOrRaw<String>>) -> Self {
         Self {
             base: ViewBase::default(),
             text: text.into().into(),
