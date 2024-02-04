@@ -9,11 +9,15 @@ use cacao::objc::{class, msg_send, sel, sel_impl};
 
 use crate::StackDirection;
 
+use super::DynamicViewWrapper;
+
 pub struct NSStackView {
     pub objc: ObjcProperty,
 
     pub center_x: LayoutAnchorX,
     pub center_y: LayoutAnchorY,
+
+    pub children: Vec<DynamicViewWrapper>,
 }
 
 impl NSStackView {
@@ -40,13 +44,16 @@ impl NSStackView {
             objc: ObjcProperty::retain(view),
 
             center_x: LayoutAnchorX::Center(unsafe { ShareId::from_ptr(msg_send![view, centerXAnchor]) }),
-            center_y: LayoutAnchorY::Center(unsafe { ShareId::from_ptr(msg_send![view, centerYAnchor]) })
+            center_y: LayoutAnchorY::Center(unsafe { ShareId::from_ptr(msg_send![view, centerYAnchor]) }),
+
+            children: Vec::new(),
         }
     }
 
-    pub fn add_view(&self, subview: &ObjcProperty) {
+    pub fn add_view(&mut self, subview: DynamicViewWrapper) {
+
         self.objc.with_mut(|view| {
-            subview.with_mut(|subview| {
+            subview.objc().with_mut(|subview| {
                 unsafe {
                     // let _: () = msg_send![view, addView:subview inGravity:gravity];
                     let _: () = msg_send![view, addArrangedSubview:subview];
@@ -54,6 +61,8 @@ impl NSStackView {
                 }
             });
         });
+
+        self.children.push(subview);
     }
 
     pub(crate) fn add_as_subview<V: Layout>(&self, view: &V) {

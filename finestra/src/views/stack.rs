@@ -77,10 +77,10 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Stack<State,
     fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
         use crate::platform::macos::nsstackview::NSStackView;
 
-        let view = NSStackView::new(self.direction);
+        let mut view = NSStackView::new(self.direction);
         for child in &mut self.children {
             let comp = child.build_native(tree);
-            view.add_view(comp.objc());
+            view.add_view(comp);
         }
 
         view.into()
