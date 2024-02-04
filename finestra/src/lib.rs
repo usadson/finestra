@@ -23,3 +23,5 @@ pub use self::resources::*;
 pub use self::state::*;
 pub use self::views::*;
 pub use self::window::*;
+
+pub(crate) use self::event::*;

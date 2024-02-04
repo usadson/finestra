@@ -5,7 +5,7 @@ use cacao::{
     button::Button, image::ImageView, input::TextField, layout::{Layout, LayoutAnchorX, LayoutAnchorY}, listview::{ListView, ListViewRow}, progress::ProgressIndicator, scrollview::ScrollView, select::Select, switch::Switch, text::Label, utils::properties::ObjcProperty, view::View
 };
 
-use super::nsstackview::NSStackView;
+use super::{cacao_delegates::MacOSTextFieldDelegate, nsstackview::NSStackView};
 
 
 /// This internal type, represents [`Layout`](cacao::layout::Layout) in an
@@ -21,7 +21,8 @@ pub enum DynamicViewWrapper {
     Select(Select),
     StackView(NSStackView),
     Switch(Switch),
-    TextField(TextField),
+    #[allow(private_interfaces)]
+    TextField(TextField<MacOSTextFieldDelegate>),
     View(View),
 }
 
@@ -132,6 +133,12 @@ impl From<NSStackView> for DynamicViewWrapper {
     }
 }
 
+impl From<ProgressIndicator> for DynamicViewWrapper {
+    fn from(value: ProgressIndicator) -> Self {
+        Self::ProgressIndicator(value)
+    }
+}
+
 impl From<ScrollView> for DynamicViewWrapper {
     fn from(value: ScrollView) -> Self {
         Self::ScrollView(value)
@@ -150,8 +157,8 @@ impl From<Switch> for DynamicViewWrapper {
     }
 }
 
-impl From<TextField> for DynamicViewWrapper {
-    fn from(value: TextField) -> Self {
+impl From<TextField<MacOSTextFieldDelegate>> for DynamicViewWrapper {
+    fn from(value: TextField<MacOSTextFieldDelegate>) -> Self {
         Self::TextField(value)
     }
 }

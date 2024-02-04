@@ -78,11 +78,13 @@ impl<State> BaseView for Label<State> {
     }
 }
 
-impl<Delegate, State> View<Delegate, State> for Label<State>
+impl<Delegate, State: 'static> View<Delegate, State> for Label<State>
         where Delegate: AppDelegate<State> {
     #[cfg(target_os = "macos")]
-    fn build_native(&mut self, _tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
+    fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
         use crate::platform::macos::resources::ToCacao;
+
+        let view_id = tree.exchange_events_for_id(Default::default());
 
         let label = cacao::text::Label::new();
         label.set_text(&self.text.clone_inner());
@@ -96,7 +98,7 @@ impl<Delegate, State> View<Delegate, State> for Label<State>
             label.set_background_color(color);
         }
 
-        crate::platform::macos::state::attach_label_state(&self, &label);
+        crate::platform::macos::state::attach_label_state(view_id, &self, &label);
         label.into()
     }
 

@@ -107,7 +107,7 @@ impl<Delegate, State> From<HWND> for Window<Delegate, State> {
     }
 }
 
-struct WindowData<Delegate, State>
+struct WindowData<Delegate, State: 'static>
         where Delegate: AppDelegate<State> {
     delegate: Delegate,
     state: State,
@@ -115,7 +115,7 @@ struct WindowData<Delegate, State>
     view: Option<WinView>,
 }
 
-impl<Delegate, State> WindowData<Delegate, State>
+impl<Delegate, State: 'static> WindowData<Delegate, State>
         where Delegate: AppDelegate<State> {
     fn make_content_view(&mut self) {
         let view = self.delegate.make_content_view(&mut self.state, self.delegator.clone());

@@ -3,7 +3,7 @@
 
 use std::{fmt::Debug, sync::{Arc, RwLock}};
 
-use crate::{Color, SystemColor};
+use crate::{Color, SystemColor, ViewId};
 
 pub type ColorValue = State<Color>;
 pub type TextValue = State<String>;
@@ -24,13 +24,7 @@ impl<T> State<T> {
     }
 
     pub fn set(&self, value: impl Into<T>) {
-        let value = value.into();
-
-        let mut inner = self.inner.write().unwrap();
-        for callback in &inner.callbacks {
-            (callback)(&value);
-        }
-        inner.value = value;
+        self.set_with_origin(value, StateChangeOrigin::User);
     }
 
     pub fn with<F: FnOnce(&T) -> R, R>(&self, f: F) -> R {
@@ -44,7 +38,25 @@ impl<T> State<T> {
     }
 
     pub fn add_listener<F: Fn(&T) + 'static>(&self, callback: F) {
-        self.inner.as_ref().write().unwrap().callbacks.push(Box::new(callback));
+        self.add_listener_with_origin(callback, StateChangeOrigin::User);
+    }
+
+    pub(crate) fn add_listener_with_origin<F: Fn(&T) + 'static>(&self, callback: F, origin: StateChangeOrigin) {
+        self.inner.as_ref().write().unwrap().callbacks.push(StateCallback {
+            callback: Box::new(callback),
+            origin,
+        });
+    }
+
+    pub(crate) fn set_with_origin(&self, value: impl Into<T>, origin: StateChangeOrigin) {
+        let value = value.into();
+        let mut inner = self.inner.write().unwrap();
+        for callback in &inner.callbacks {
+            if callback.origin != origin {
+                (callback.callback)(&value);
+            }
+        }
+        inner.value = value;
     }
 }
 
@@ -65,6 +77,15 @@ impl<T> StateOrRaw<T> {
     pub fn clone_inner(&self) -> T
             where T: Clone {
         self.with(Clone::clone)
+    }
+
+    pub fn as_state(&self) -> Option<State<T>>
+            where T: Clone {
+        if let Self::State(state) = &self {
+            Some(state.clone())
+        } else {
+            None
+        }
     }
 }
 
@@ -120,13 +141,24 @@ impl<T> Debug for State<T> {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum StateChangeOrigin {
+    User,
+    Owner(ViewId),
+}
+
 struct StateInner<T> {
     value: T,
-    callbacks: Vec<Box<Callback<T>>>,
+    callbacks: Vec<StateCallback<T>>,
 }
 
 impl From<SystemColor> for StateOrRaw<Color> {
     fn from(value: SystemColor) -> Self {
         Self::Raw(Color::system(value))
     }
+}
+
+struct StateCallback<T> {
+    callback: Box<Callback<T>>,
+    origin: StateChangeOrigin,
 }

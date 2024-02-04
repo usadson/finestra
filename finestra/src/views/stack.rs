@@ -46,7 +46,7 @@ impl<State, Delegate> Stack<State, Delegate> {
     }
 }
 
-impl<State, Delegate> Stack<State, Delegate>
+impl<State: 'static, Delegate> Stack<State, Delegate>
         where Delegate: AppDelegate<State> + 'static {
     pub fn with(mut self, view: impl Into<Box<dyn View<Delegate, State>>>) -> Self {
         self.children.push(view.into());

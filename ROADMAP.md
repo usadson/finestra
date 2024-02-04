@@ -12,7 +12,7 @@
 - [x] Button
 - [ ] Calendar
 - [ ] Check Box
-- [ ] Text Field (single line)
+- [x] Text Field (single line)
 - [ ] Text Field (multiline)
 
 #### 1.2.2. Interactive Containers

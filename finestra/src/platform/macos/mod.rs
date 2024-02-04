@@ -1,6 +1,7 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
+pub(crate) mod cacao_delegates;
 mod core_animation;
 mod dynamic_wrapper;
 pub(crate) mod extensions;
@@ -20,6 +21,7 @@ use cacao::layout::LayoutConstraint;
 use cacao::notification_center::Dispatcher;
 
 use crate::event::{EventHandlerMapRegistry, ViewTree};
+use crate::platform::macos::cacao_delegates::StatefulEventDispatcher;
 use crate::{App, AppDelegate, DialogBuilder, View, Window, WindowDelegator};
 pub(crate) use self::dynamic_wrapper::DynamicViewWrapper;
 use self::extensions::WindowExtensions;
@@ -115,6 +117,18 @@ impl<Delegate, State> Dispatcher for MacOSDelegate<Delegate, State>
 
                 (handler)(&mut state, window);
             }
+
+            Event::TextFieldChanged(view_id, text) => {
+                let Some(handler) = self.event_registry.map.get(&view_id) else {
+                    return;
+                };
+
+                let Some(handler) = &handler.text_changed else {
+                    return;
+                };
+
+                (handler)(&mut state, text, window);
+            }
         }
     }
 }
@@ -142,12 +156,18 @@ impl<Delegate, State> WindowDelegate for MacOSWindowDelegate<Delegate, State>
             window: Rc::clone(&window),
         }));
 
+        let dispatcher = StatefulEventDispatcher {
+            state: self.state.clone(),
+            event_registry: self.event_registry.clone(),
+            window: user_delegator.clone(),
+        };
+
         let mut delegate = self.delegate.borrow_mut();
 
         let mut state = self.state.lock().unwrap();
         let mut content_view = delegate.make_content_view(&mut state, user_delegator);
 
-        let mut tree = ViewTree::new(self.event_registry.clone());
+        let mut tree = ViewTree::new(self.event_registry.clone(), dispatcher);
         let content_view = content_view.build_native(&mut tree);
 
         content_view.add_to_view(&self.view);

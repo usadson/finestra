@@ -5,6 +5,7 @@ mod base;
 mod button;
 mod label;
 mod stack;
+mod text_field;
 
 use crate::AppDelegate;
 
@@ -12,13 +13,14 @@ pub use self::base::*;
 pub use self::button::Button;
 pub use self::label::Label;
 pub use self::stack::*;
+pub use self::text_field::*;
 
 /// A generic graphical component.
 ///
 /// Common components are:
 /// 1. [`Label`] can be used to display text.
 pub trait View<Delegate, State=()>
-        where Delegate: AppDelegate<State> {
+        where Delegate: AppDelegate<State>, State: 'static {
     /// Internal API: creates a native view (for macOS).
     #[cfg(target_os = "macos")]
     fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper;
@@ -28,7 +30,7 @@ pub trait View<Delegate, State=()>
     fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::win32::view::WinView;
 }
 
-impl<Delegate, State> View<Delegate, State> for ()
+impl<Delegate, State: 'static> View<Delegate, State> for ()
         where Delegate: AppDelegate<State> {
     #[cfg(target_os = "macos")]
     fn build_native(&mut self, _tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {

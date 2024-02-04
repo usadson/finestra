@@ -15,7 +15,7 @@ pub struct App<Delegate, State=()> {
     pub(crate) state: State,
 }
 
-impl<Delegate, State> App<Delegate, State>
+impl<Delegate, State: 'static> App<Delegate, State>
         where Delegate: AppDelegate<State> + 'static {
     pub fn new(delegate: Delegate) -> App<Delegate, ()> {
         App {
@@ -54,7 +54,8 @@ impl<Delegate, State> App<Delegate, State>
 /// A platform-agnostic delegation trait, which will be used as a facade for
 /// these native frameworks.
 #[allow(unused_variables)]
-pub trait AppDelegate<State = ()> {
+pub trait AppDelegate<State = ()>
+        where State: 'static {
     /// Called when the underlying native framework finished launching.
     fn did_launch(&mut self) {}
 
