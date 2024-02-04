@@ -88,7 +88,6 @@ impl<Delegate, State: 'static> View<Delegate, State> for Label<State>
 
         let label = cacao::text::Label::new();
         label.set_text(&self.text.clone_inner());
-        label.set_font(&cacao::text::Font::system(30.));
 
         if let Some(color) = self.text_color.clone_inner().to_cacao() {
             label.set_text_color(color);
