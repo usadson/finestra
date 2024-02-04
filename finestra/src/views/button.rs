@@ -88,7 +88,9 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State
         where Delegate: 'static, State: 'static {
     #[cfg(target_os = "macos")]
     fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
-        use cacao::appkit::App;
+        use cacao::{appkit::App, button::BezelStyle};
+        use crate::platform::macos::extensions::ButtonExtensions;
+
         use crate::platform::macos::{
             resources::ToCacao, state::Event, MacOSDelegate
         };
@@ -105,7 +107,8 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State
         }
 
         if let Some(color) = self.background_color.clone_inner().to_cacao() {
-            button.set_background_color(color);
+            button.set_bezel_color(color);
+            button.set_bezel_style(BezelStyle::Rounded);
         }
 
         crate::platform::macos::state::attach_button_state(&self, &button);

@@ -3,7 +3,7 @@
 
 use std::{fmt::Debug, sync::{Arc, RwLock}};
 
-use crate::Color;
+use crate::{Color, SystemColor};
 
 pub type ColorValue = State<Color>;
 pub type TextValue = State<String>;
@@ -123,4 +123,10 @@ impl<T> Debug for State<T> {
 struct StateInner<T> {
     value: T,
     callbacks: Vec<Box<Callback<T>>>,
+}
+
+impl From<SystemColor> for StateOrRaw<Color> {
+    fn from(value: SystemColor) -> Self {
+        Self::Raw(Color::system(value))
+    }
 }

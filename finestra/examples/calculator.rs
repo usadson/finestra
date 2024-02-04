@@ -20,7 +20,8 @@ impl AppDelegate<AppState> for Application {
             .with({
                 Stack::horizontal()
                     .with(Button::new(state.clear_text.clone())
-                            .with_on_click(|state: &mut AppState, _| state.clear()))
+                            .with_on_click(|state: &mut AppState, _| state.clear())
+                            .with_background_color(SystemColor::Orange))
                     .with(Label::new(state.label.clone()))
             })
             .with({

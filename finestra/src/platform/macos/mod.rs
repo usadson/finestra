@@ -1,8 +1,9 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
+mod core_animation;
 mod dynamic_wrapper;
-mod extensions;
+pub(crate) mod extensions;
 pub(crate) mod resources;
 pub(crate) mod state;
 mod nsalert;
