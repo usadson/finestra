@@ -64,6 +64,13 @@ impl<State, Delegate> BaseView for Stack<State, Delegate> {
     }
 }
 
+impl<Delegate, State> From<Stack<State, Delegate>> for Box<dyn View<Delegate, State>>
+        where Delegate: AppDelegate<State> + 'static, State: 'static {
+    fn from(value: Stack<State, Delegate>) -> Self {
+        Box::new(value)
+    }
+}
+
 impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Stack<State, Delegate>
         where Delegate: 'static, State: 'static {
     #[cfg(target_os = "macos")]
