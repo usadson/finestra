@@ -59,7 +59,7 @@ impl<Delegate, State> Window<Delegate, State>
 
     pub fn show(&self) {
         let data = self.get_data().unwrap();
-        data.delegate.will_show_window(data.delegator.clone());
+        data.delegate.will_show_window(data.delegator.clone(), &mut data.state);
         unsafe {
             ShowWindow(self.hwnd, SW_NORMAL);
         }

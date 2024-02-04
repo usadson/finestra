@@ -15,9 +15,9 @@ use self::window::Window;
 pub fn run_app<Delegate, State>(mut app: App<Delegate, State>) -> !
         where Delegate: AppDelegate<State> + 'static,
               State: 'static {
-    app.delegate.did_launch();
+    app.delegate.did_launch(&mut app.state);
 
-    let config = app.delegate.configure_main_window();
+    let config = app.delegate.configure_main_window(&mut app.state);
 
     let window = Window::new(config, app.delegate, app.state);
 
