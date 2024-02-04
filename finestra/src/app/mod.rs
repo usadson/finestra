@@ -57,14 +57,15 @@ impl<Delegate, State> App<Delegate, State>
 pub trait AppDelegate<State = ()>
         where State: 'static {
     /// Called when the underlying native framework finished launching.
-    fn did_launch(&mut self) {}
+    fn did_launch(&mut self, state: &mut State) { _ = state }
 
     /// Called when the underlying native framework finished launching.
-    fn will_show_window(&mut self, window: Window) {}
+    fn will_show_window(&mut self, window: Window, state: &mut State) { _ = state }
 
     /// Called when the main window must be configured. By overloading this
     /// function, you can - for example - give the window a name.
-    fn configure_main_window(&mut self) -> WindowConfiguration {
+    fn configure_main_window(&mut self, state: &mut State) -> WindowConfiguration {
+        _ = state;
         Default::default()
     }
 

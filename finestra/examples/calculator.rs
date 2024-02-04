@@ -7,7 +7,7 @@ use finestra::*;
 struct Application;
 
 impl AppDelegate<AppState> for Application {
-    fn configure_main_window(&mut self) -> WindowConfiguration {
+    fn configure_main_window(&mut self, _: &mut AppState) -> WindowConfiguration {
         WindowConfiguration::default()
             .with_title("Finestra Calculator")
     }

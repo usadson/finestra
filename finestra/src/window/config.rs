@@ -1,8 +1,6 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use std::borrow::Cow;
-
 use euclid::Size2D;
 
 use crate::{Number, StateOrRaw};

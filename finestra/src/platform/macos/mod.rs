@@ -67,7 +67,7 @@ pub(crate) struct MacOSDelegate<Delegate, State>
     state: Arc<Mutex<State>>,
 }
 
-impl<Delegate, State> CacaoAppDelegate for MacOSDelegate<Delegate, State>
+impl<Delegate, State: 'static> CacaoAppDelegate for MacOSDelegate<Delegate, State>
         where Delegate: AppDelegate<State> + 'static {
     fn did_finish_launching(&self) {
         CacaoApp::activate();
@@ -76,9 +76,12 @@ impl<Delegate, State> CacaoAppDelegate for MacOSDelegate<Delegate, State>
             window: Rc::clone(&self.window),
         }));
 
-        self.delegate.borrow_mut().did_launch();
+        let config = {
+            let mut state = self.state.as_ref().lock().unwrap();
 
-        let config = self.delegate.borrow_mut().configure_main_window();
+            self.delegate.as_ref().borrow_mut().did_launch(&mut state);
+            self.delegate.as_ref().borrow_mut().configure_main_window(&mut state)
+        };
 
         config.title.as_ref().with(|title| {
             self.window.set_title(title);
@@ -95,7 +98,10 @@ impl<Delegate, State> CacaoAppDelegate for MacOSDelegate<Delegate, State>
             self.window.set_content_size(config.width, config.height);
         }
 
-        self.delegate.borrow_mut().will_show_window(user_delegator);
+        {
+            let mut state = self.state.as_ref().lock().unwrap();
+            self.delegate.as_ref().borrow_mut().will_show_window(user_delegator, &mut state);
+        }
         self.window.show();
     }
 
@@ -173,7 +179,7 @@ impl<Delegate, State> WindowDelegate for MacOSWindowDelegate<Delegate, State>
             window: user_delegator.clone(),
         };
 
-        let mut delegate = self.delegate.borrow_mut();
+        let mut delegate = self.delegate.as_ref().borrow_mut();
 
         let mut state = self.state.lock().unwrap();
         let mut content_view = delegate.make_content_view(&mut state, user_delegator);
