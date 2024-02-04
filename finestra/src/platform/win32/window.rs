@@ -163,7 +163,9 @@ pub fn create_window<Delegate, State: 'static>(config: WindowConfiguration) -> H
         where Delegate: AppDelegate<State> + 'static{
     register_class::<Delegate, State>();
 
-    let title = format!("{}\0", config.title.as_str());
+    let title = config.title.as_ref().with(|title| {
+        format!("{title}\0")
+    });
     let title = PCSTR::from_raw(title.as_ptr());
 
     let hwnd = unsafe {

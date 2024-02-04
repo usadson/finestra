@@ -79,7 +79,17 @@ impl<Delegate, State> CacaoAppDelegate for MacOSDelegate<Delegate, State>
         self.delegate.borrow_mut().did_launch();
 
         let config = self.delegate.borrow_mut().configure_main_window();
-        self.window.set_title(config.title.as_str());
+
+        config.title.as_ref().with(|title| {
+            self.window.set_title(title);
+        });
+
+        if let Some(state) = config.title.as_ref().as_state() {
+            let window = self.window.clone();
+            state.add_listener(move |value| {
+                window.set_title(&value);
+            });
+        }
 
         if config.width != 0.0 && config.height != 0.0 {
             self.window.set_content_size(config.width, config.height);
@@ -137,6 +147,7 @@ struct MacOSWindowDelegate<Delegate, State>
         where State: 'static {
     delegate: Rc<RefCell<Delegate>>,
     window: Option<Rc<CacaoWindow>>,
+    #[allow(unused)]
     delegator: Option<Window>,
     view: cacao::view::View,
     content: Option<DynamicViewWrapper>,

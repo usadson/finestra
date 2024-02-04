@@ -5,7 +5,7 @@ use std::borrow::Cow;
 
 use euclid::Size2D;
 
-use crate::Number;
+use crate::{Number, StateOrRaw};
 
 
 #[derive(Default)]
@@ -32,7 +32,7 @@ impl WindowConfiguration {
     }
 
     #[must_use]
-    pub fn with_title(self, title: impl Into<Cow<'static, str>>) -> Self {
+    pub fn with_title(self, title: impl Into<StateOrRaw<String>>) -> Self {
         Self {
             title: TitleWrapper(title.into()),
             ..self
@@ -42,7 +42,7 @@ impl WindowConfiguration {
 
 /// A simple wrapper, just to allow us to add a [`Default`] value.
 #[derive(Debug)]
-pub(crate) struct TitleWrapper(Cow<'static, str>);
+pub(crate) struct TitleWrapper(StateOrRaw<String>);
 
 impl Default for TitleWrapper {
     fn default() -> Self {
@@ -50,8 +50,8 @@ impl Default for TitleWrapper {
     }
 }
 
-impl TitleWrapper {
-    pub fn as_str(&self) -> &str {
+impl AsRef<StateOrRaw<String>> for TitleWrapper {
+    fn as_ref(&self) -> &StateOrRaw<String> {
         &self.0
     }
 }
