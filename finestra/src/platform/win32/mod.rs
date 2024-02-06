@@ -15,6 +15,10 @@ use self::window::Window;
 pub fn run_app<Delegate, State>(mut app: App<Delegate, State>) -> !
         where Delegate: AppDelegate<State> + 'static,
               State: 'static {
+    unsafe {
+        windows::Win32::UI::WindowsAndMessaging::SetProcessDPIAware();
+    }
+
     app.delegate.did_launch(&mut app.state);
 
     let config = app.delegate.configure_main_window(&mut app.state);

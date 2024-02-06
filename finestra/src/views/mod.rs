@@ -29,7 +29,11 @@ pub trait View<Delegate, State=()>
 
     /// Internal API: creates a native view (for Win32).
     #[cfg(target_os = "windows")]
-    fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::win32::view::WinView;
+    fn build_native(
+        &mut self,
+        tree: &mut crate::event::ViewTree<State>,
+        parent: windows::Win32::Foundation::HWND,
+    ) -> crate::platform::win32::view::WinView;
 }
 
 impl<Delegate, State: 'static> View<Delegate, State> for ()
@@ -41,7 +45,11 @@ impl<Delegate, State: 'static> View<Delegate, State> for ()
 
     /// Internal API: creates a native view (for Win32).
     #[cfg(target_os = "windows")]
-    fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::win32::view::WinView {
+    fn build_native(
+        &mut self,
+        tree: &mut crate::event::ViewTree<State>,
+        _parent: windows::Win32::Foundation::HWND,
+    ) -> crate::platform::win32::view::WinView {
         use crate::platform::win32::view::{WinView, WinViewKind};
 
         WinView::new(tree.exchange_events_for_id(Default::default()), WinViewKind::Empty)

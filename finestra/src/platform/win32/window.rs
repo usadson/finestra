@@ -7,7 +7,7 @@ use std::{mem::size_of, sync::Once};
 
 use windows::core::PCSTR;
 use windows::Win32::Foundation::GetLastError;
-use windows::Win32::Graphics::Gdi::UpdateWindow;
+use windows::Win32::Graphics::Gdi::{GetStockObject, UpdateWindow, BLACK_BRUSH, HDC, HOLLOW_BRUSH};
 use windows::Win32::UI::WindowsAndMessaging::*;
 use windows::Win32::{
     Foundation::{
@@ -29,7 +29,8 @@ use windows::Win32::{
     },
 };
 
-use crate::{AppDelegate, WindowConfiguration};
+use crate::event::{EventHandlerMapRegistry, ViewTree};
+use crate::{AppDelegate, View, WindowConfiguration};
 
 use super::view::WinView;
 
@@ -49,6 +50,7 @@ impl<Delegate, State> Window<Delegate, State>
         let this = Self::from(hwnd);
 
         this.set_data(WindowData {
+            hwnd,
             delegate,
             state,
             delegator: crate::Window::new(Rc::new(Self::from(hwnd))),
@@ -107,8 +109,9 @@ impl<Delegate, State> From<HWND> for Window<Delegate, State> {
     }
 }
 
-struct WindowData<Delegate, State: 'static>
+pub struct WindowData<Delegate, State: 'static>
         where Delegate: AppDelegate<State> {
+    hwnd: HWND,
     delegate: Delegate,
     state: State,
     delegator: crate::Window,
@@ -118,8 +121,15 @@ struct WindowData<Delegate, State: 'static>
 impl<Delegate, State: 'static> WindowData<Delegate, State>
         where Delegate: AppDelegate<State> {
     fn make_content_view(&mut self) {
-        let view = self.delegate.make_content_view(&mut self.state, self.delegator.clone());
-        _ = view; // TODO
+        let view = {
+            let mut view = self.delegate.make_content_view(&mut self.state, self.delegator.clone());
+            let registry = EventHandlerMapRegistry::<State>::default();
+            let mut tree = ViewTree::<State>::new(registry.clone());
+            view.build_native(&mut tree, self.hwnd)
+        };
+
+        view.install(&self);
+        self.view = Some(view);
     }
 }
 
@@ -240,11 +250,17 @@ fn handle_procedure<Delegate, State: 'static>(window: Window<Delegate, State>, m
             return Some(LRESULT(0));
         }
 
-        _ => ()
-    }
+        WM_CTLCOLORSTATIC => {
+            let hdc = HDC(w_param.0 as _);
+            let hctl = HWND(l_param.0);
+            return Some(LRESULT(unsafe { GetStockObject(BLACK_BRUSH) }.0));
+        }
 
-    if data.view.is_none() {
-        data.make_content_view();
+        WM_SHOWWINDOW => if data.view.is_none() {
+            data.make_content_view();
+        },
+
+        _ => ()
     }
 
     None

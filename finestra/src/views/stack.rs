@@ -88,7 +88,11 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Stack<State,
 
     /// Internal API: creates a native view (for Win32).
     #[cfg(target_os = "windows")]
-    fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::win32::view::WinView {
-        <() as super::View<Delegate, State>>::build_native(&mut (), tree)
+    fn build_native(
+        &mut self,
+        tree: &mut crate::event::ViewTree<State>,
+        parent: windows::Win32::Foundation::HWND,
+    ) -> crate::platform::win32::view::WinView {
+        <() as super::View<Delegate, State>>::build_native(&mut (), tree, parent)
     }
 }

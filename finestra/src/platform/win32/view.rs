@@ -1,7 +1,11 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
+use windows::{core::PCSTR, Win32::{Foundation::{GetLastError, HWND}, System::SystemServices::SS_CENTER, UI::WindowsAndMessaging::{CreateWindowExA, ShowWindow, SW_SHOWDEFAULT, WINDOW_STYLE, WS_CHILD, WS_TABSTOP, WS_VISIBLE}}};
+use windows::Win32::System::SystemServices::SS_SIMPLE;
 use crate::event::ViewId;
+
+use super::window::WindowData;
 
 #[derive(Debug)]
 pub struct WinView {
@@ -16,9 +20,60 @@ impl WinView {
             kind,
         }
     }
+
+    pub(crate) fn install<Delegate, State>(&self, window: &WindowData<Delegate, State>)
+            where Delegate: crate::AppDelegate<State> {
+        _ = window;
+        if let Some(hwnd) = self.kind.hwnd() {
+            unsafe { ShowWindow(hwnd, SW_SHOWDEFAULT) };
+        }
+    }
 }
 
 #[derive(Debug)]
 pub enum WinViewKind {
     Empty,
+    Label(WinLabel),
+}
+
+impl WinViewKind {
+    pub fn hwnd(&self) -> Option<HWND> {
+        match self {
+            Self::Empty => None,
+            Self::Label(label) => Some(label.hwnd),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct WinLabel {
+    hwnd: HWND,
+}
+
+impl WinLabel {
+    pub fn new(parent: HWND, text: &str) -> Self {
+        let class_name = PCSTR::from_raw("STATIC\0".as_ptr());
+        let text = PCSTR::from_raw(format!("{text}\0").as_ptr());
+
+        let hwnd = unsafe {
+            CreateWindowExA(
+                Default::default(),
+                class_name,
+                text,
+                WS_CHILD | WS_VISIBLE | WS_TABSTOP | WINDOW_STYLE(SS_SIMPLE.0),
+                10, 10,
+                100, 100,
+                parent,
+                None,
+                None,
+                None
+            )
+        };
+
+        debug_assert!(hwnd.0 != 0, "{:#?}", unsafe{GetLastError()});
+
+        Self {
+            hwnd,
+        }
+    }
 }

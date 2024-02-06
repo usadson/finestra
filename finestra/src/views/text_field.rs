@@ -86,7 +86,11 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for TextField<St
 
     /// Internal API: creates a native view (for Win32).
     #[cfg(target_os = "windows")]
-    fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::win32::view::WinView {
+    fn build_native(
+        &mut self,
+        tree: &mut crate::event::ViewTree<State>,
+        parent: windows::Win32::Foundation::HWND,
+    ) -> crate::platform::win32::view::WinView {
         use crate::platform::win32::view::{WinView, WinViewKind};
 
         _ = &self.text;
