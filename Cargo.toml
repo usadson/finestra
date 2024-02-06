@@ -13,3 +13,11 @@ authors = ["Tristan Gerritsen"]
 license = "Apache-2.0"
 license-file = "COPYING"
 description = "Cross Platform Native UI Framework"
+
+[profile.release-tiny]
+inherits = "release"
+strip = true
+opt-level = "z"
+codegen-units = 1
+panic = "abort"
+lto = true
