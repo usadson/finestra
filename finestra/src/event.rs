@@ -80,6 +80,11 @@ impl<State: 'static> ViewTree<State> {
         id
     }
 
+    pub(crate) fn put_event_handlers_with_id(&mut self, id: ViewId, map: EventHandlerMap<State>) -> ViewId {
+        self.registry.map.insert(id, map);
+        id
+    }
+
     #[cfg(target_os = "macos")]
     pub(crate) fn create_dispatcher(&self) -> Box<dyn EventDispatcher> {
         Box::new(self.dispatcher.clone())

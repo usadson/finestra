@@ -6,7 +6,7 @@ use windows::Win32::System::SystemServices::SS_SIMPLE;
 use crate::event::ViewId;
 use windows::Win32::UI::WindowsAndMessaging::BS_DEFPUSHBUTTON;
 
-use super::window::WindowData;
+use super::{window::WindowData, wrapper::Hwnd};
 
 #[derive(Debug)]
 pub struct WinView {
@@ -26,7 +26,7 @@ impl WinView {
             where Delegate: crate::AppDelegate<State> {
         _ = window;
         if let Some(hwnd) = self.kind.hwnd() {
-            unsafe { ShowWindow(hwnd, SW_SHOWDEFAULT) };
+            hwnd.show(SW_SHOWDEFAULT);
         }
     }
 }
@@ -39,7 +39,7 @@ pub enum WinViewKind {
 }
 
 impl WinViewKind {
-    pub fn hwnd(&self) -> Option<HWND> {
+    pub fn hwnd(&self) -> Option<Hwnd> {
         match self {
             Self::Empty => None,
             Self::Button(button) => Some(button.hwnd),
@@ -50,7 +50,7 @@ impl WinViewKind {
 
 #[derive(Debug)]
 pub struct WinButton {
-    hwnd: HWND,
+    hwnd: Hwnd,
 }
 
 impl WinButton {
@@ -76,14 +76,20 @@ impl WinButton {
         debug_assert!(hwnd.0 != 0, "{:#?}", unsafe{GetLastError()});
 
         Self {
-            hwnd,
+            hwnd: hwnd.into(),
         }
+    }
+}
+
+impl AsRef<Hwnd> for WinButton {
+    fn as_ref(&self) -> &Hwnd {
+        &self.hwnd
     }
 }
 
 #[derive(Debug)]
 pub struct WinLabel {
-    hwnd: HWND,
+    hwnd: Hwnd,
 }
 
 impl WinLabel {
@@ -109,7 +115,13 @@ impl WinLabel {
         debug_assert!(hwnd.0 != 0, "{:#?}", unsafe{GetLastError()});
 
         Self {
-            hwnd,
+            hwnd: hwnd.into(),
         }
+    }
+}
+
+impl AsRef<Hwnd> for WinLabel {
+    fn as_ref(&self) -> &Hwnd {
+        &self.hwnd
     }
 }

@@ -30,9 +30,10 @@ use windows::Win32::{
 };
 
 use crate::event::{EventHandlerMapRegistry, ViewTree};
-use crate::{AppDelegate, View, WindowConfiguration};
+use crate::{AppDelegate, View, ViewId, WindowConfiguration};
 
 use super::view::WinView;
+use super::wrapper::ControlId;
 
 static CLASS_NAME: &str = "FinestraWindow\0";
 
@@ -55,6 +56,7 @@ impl<Delegate, State> Window<Delegate, State>
             state,
             delegator: crate::Window::new(Rc::new(Self::from(hwnd))),
             view: None,
+            registry: Default::default(),
         });
         this
     }
@@ -116,6 +118,7 @@ pub struct WindowData<Delegate, State: 'static>
     state: State,
     delegator: crate::Window,
     view: Option<WinView>,
+    registry: EventHandlerMapRegistry<State>,
 }
 
 impl<Delegate, State: 'static> WindowData<Delegate, State>
@@ -125,11 +128,27 @@ impl<Delegate, State: 'static> WindowData<Delegate, State>
             let mut view = self.delegate.make_content_view(&mut self.state, self.delegator.clone());
             let registry = EventHandlerMapRegistry::<State>::default();
             let mut tree = ViewTree::<State>::new(registry.clone());
+            self.registry = registry;
             view.build_native(&mut tree, self.hwnd)
         };
 
         view.install(&self);
         self.view = Some(view);
+    }
+
+    fn handle_control_notification(&mut self, notification: u16, control_id: ControlId, hwnd: HWND) {
+        let id = ViewId(control_id.0 as _);
+        let Some(control) = self.registry.map.get(&id) else {
+            return;
+        };
+
+        match notification as u32 {
+            BN_CLICKED => if let Some(callback) = &control.click {
+                callback(&mut self.state, self.delegator.clone());
+            }
+
+            _ => println!("WM_COMMAND: Unknown notification: {notification:x}"),
+        }
     }
 }
 
@@ -238,16 +257,34 @@ fn handle_procedure<Delegate, State: 'static>(window: Window<Delegate, State>, m
         // WM_NCCALCSIZE, and WM_CREATE. We cannot really do anything
         // here without the data, so we just DefWindowProcA here.
 
-        _ = w_param;
-        _ = l_param;
         return None;
     };
+
+    let w_param_high = ((w_param.0 as u32) >> 16) as u16;
+    let w_param_low = w_param.0 as u16;
 
     match message {
         // <https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-close>
         WM_CLOSE => {
             unsafe { PostQuitMessage(0) }
             return Some(LRESULT(0));
+        }
+
+        // <https://learn.microsoft.com/en-us/windows/win32/menurc/wm-command>
+        WM_COMMAND => {
+            if l_param.0 != 0 {
+                data.handle_control_notification(w_param_high, ControlId(w_param_low as _), HWND(l_param.0))
+            } else {
+                match w_param_high {
+                    // Menu
+                    0 => println!("  WM_COMMAND MENU {w_param_low:x}"),
+
+                    // Accelerator
+                    1 => println!("  WM_COMMAND ACCEL {w_param_low:x}"),
+
+                    _ => unreachable!(),
+                }
+            }
         }
 
         WM_CTLCOLORSTATIC => {

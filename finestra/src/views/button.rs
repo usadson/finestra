@@ -126,13 +126,18 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State
         tree: &mut crate::event::ViewTree<State>,
         parent: windows::Win32::Foundation::HWND,
     ) -> crate::platform::win32::view::WinView {
-        use crate::platform::win32::view::{WinButton, WinView, WinViewKind};
+        use crate::{platform::win32::view::{WinButton, WinView, WinViewKind}, ViewId};
 
         let button = self.text.with(|text| {
             WinButton::new(parent, text)
         });
 
-        WinView::new(tree.exchange_events_for_id(Default::default()), WinViewKind::Button(button))
+        let id = ViewId(button.as_ref().get_control_id().0 as _);
+
+        let map = std::mem::take(&mut self.event_handler_map);
+        tree.put_event_handlers_with_id(id, map);
+
+        WinView::new(id, WinViewKind::Button(button))
     }
 }
 
