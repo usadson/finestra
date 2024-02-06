@@ -114,6 +114,8 @@ impl<Delegate, State: 'static> View<Delegate, State> for Label<State>
             WinLabel::new(parent, text)
         });
 
+        label.as_ref().subscribe_text_update(self.text.as_state());
+
         WinView::new(tree.exchange_events_for_id(Default::default()), WinViewKind::Label(label))
     }
 }

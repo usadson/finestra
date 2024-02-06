@@ -32,6 +32,11 @@ impl<T> State<T> {
         f(&v.value)
     }
 
+    pub fn clone_inner(&self) -> T
+            where T: Clone {
+        self.with(Clone::clone)
+    }
+
     pub fn with_mut<F: FnOnce(&mut T) -> R, R>(&self, f: F) -> R {
         let mut v = self.inner.as_ref().write().unwrap();
         f(&mut v.value)
@@ -79,8 +84,7 @@ impl<T> StateOrRaw<T> {
         self.with(Clone::clone)
     }
 
-    pub fn as_state(&self) -> Option<State<T>>
-            where T: Clone {
+    pub fn as_state(&self) -> Option<State<T>> {
         if let Self::State(state) = &self {
             Some(state.clone())
         } else {
@@ -145,6 +149,7 @@ impl<T> Debug for State<T> {
 pub(crate) enum StateChangeOrigin {
     User,
     Owner(ViewId),
+    System,
 }
 
 struct StateInner<T> {

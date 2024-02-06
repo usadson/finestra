@@ -3,8 +3,10 @@
 
 use std::ops::Deref;
 
-use windows::Win32::{Foundation::HWND, UI::WindowsAndMessaging::{DispatchMessageA, GetDlgCtrlID, GetMessageA, ShowWindow, TranslateMessage, MSG}};
+use windows::{core::PCSTR, Win32::{Foundation::HWND, UI::WindowsAndMessaging::{DispatchMessageA, GetDlgCtrlID, GetMessageA, SetWindowTextA, ShowWindow, TranslateMessage, MSG}}};
 use windows::Win32::UI::WindowsAndMessaging::SHOW_WINDOW_CMD;
+
+use crate::{State, StateChangeOrigin};
 
 pub fn get_next_message() -> MSG {
     let mut msg = MSG::default();
@@ -57,6 +59,27 @@ impl Hwnd {
 
     pub fn show(&self, command: SHOW_WINDOW_CMD) {
         unsafe { ShowWindow(self.inner, command) };
+    }
+
+    pub fn set_text(&self, text: impl Into<String>) {
+        let mut text = text.into();
+        text += "\0";
+
+        let text = PCSTR::from_raw(text.as_ptr());
+        unsafe {
+            SetWindowTextA(self.inner, text).unwrap();
+        }
+    }
+
+    pub fn subscribe_text_update(&self, state: Option<State<String>>) {
+        let Some(state) = state else {
+            return
+        };
+
+        let obj = self.clone();
+        state.add_listener_with_origin(move |val| {
+            obj.set_text(val);
+        }, StateChangeOrigin::System);
     }
 }
 

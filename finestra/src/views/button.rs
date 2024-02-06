@@ -132,6 +132,8 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State
             WinButton::new(parent, text)
         });
 
+        button.as_ref().subscribe_text_update(self.text.as_state());
+
         let id = ViewId(button.as_ref().get_control_id().0 as _);
 
         let map = std::mem::take(&mut self.event_handler_map);

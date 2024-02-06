@@ -33,7 +33,7 @@ use crate::event::{EventHandlerMapRegistry, ViewTree};
 use crate::{AppDelegate, View, ViewId, WindowConfiguration};
 
 use super::view::WinView;
-use super::wrapper::ControlId;
+use super::wrapper::{ControlId, Hwnd};
 
 static CLASS_NAME: &str = "FinestraWindow\0";
 
@@ -217,6 +217,8 @@ pub fn create_window<Delegate, State: 'static>(config: WindowConfiguration) -> H
     if hwnd == Default::default() {
         panic!("Failed to create window!")
     }
+
+    Hwnd::from(hwnd).subscribe_text_update(config.title.as_ref().as_state());
 
     hwnd
 }
