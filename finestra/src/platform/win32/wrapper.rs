@@ -3,7 +3,7 @@
 
 use std::ops::Deref;
 
-use windows::{core::PCSTR, Win32::{Foundation::HWND, UI::WindowsAndMessaging::{DispatchMessageA, GetDlgCtrlID, GetMessageA, SetWindowTextA, ShowWindow, TranslateMessage, MSG}}};
+use windows::{core::PCSTR, Win32::{Foundation::{HWND, LPARAM, WPARAM}, Graphics::Gdi::{GetStockObject, DEFAULT_GUI_FONT, HFONT}, UI::WindowsAndMessaging::{DispatchMessageA, GetDlgCtrlID, GetMessageA, SendMessageA, SetWindowTextA, ShowWindow, TranslateMessage, MSG, WM_SETFONT}}};
 use windows::Win32::UI::WindowsAndMessaging::SHOW_WINDOW_CMD;
 
 use crate::{State, StateChangeOrigin};
@@ -53,6 +53,15 @@ pub struct Hwnd {
 }
 
 impl Hwnd {
+    pub fn new(hwnd: HWND) -> Self {
+        let this = Self { inner: hwnd };
+
+        // Defaults
+        this.use_default_font();
+
+        this
+    }
+
     pub fn get_control_id(&self) -> ControlId {
         ControlId(unsafe { GetDlgCtrlID(self.inner) })
     }
@@ -81,13 +90,18 @@ impl Hwnd {
             obj.set_text(val);
         }, StateChangeOrigin::System);
     }
+
+    pub fn use_default_font(&self) {
+        let font = HFONT(unsafe { GetStockObject(DEFAULT_GUI_FONT) }.0);
+        unsafe {
+            SendMessageA(self.inner, WM_SETFONT, WPARAM(font.0 as _), LPARAM(1));
+        }
+    }
 }
 
 impl From<HWND> for Hwnd {
     fn from(value: HWND) -> Self {
-        Self {
-            inner: value,
-        }
+        Self::new(value)
     }
 }
 
