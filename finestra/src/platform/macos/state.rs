@@ -6,8 +6,9 @@ use cacao::objc::{msg_send, sel, sel_impl};
 use cacao::{button::Button as CacaoButton, utils::properties::ObjcProperty};
 use cacao::input::TextField as CacaoTextField;
 use cacao::text::Label as CacaoLabel;
+use cacao::image::ImageView as CacaoImageView;
 
-use crate::{BaseView, Color, StateChangeOrigin, StateOrRaw, TextField};
+use crate::{BaseView, Color, ImageView, StateChangeOrigin, StateOrRaw, TextField};
 use crate::{event::ViewId, Button, Label};
 
 use super::resources::ToCacao;
@@ -27,6 +28,12 @@ pub fn attach_button_state<S>(finestra: &Button<S>, cacao: &CacaoButton) {
     hook_background_color_state(&cacao.objc, &finestra.background_color);
     hook_text_color_state(&cacao.objc, &finestra.text_color);
     hook_title_state(&cacao.objc, &finestra.text);
+}
+
+pub fn attach_image_view_state<S>(view_id: ViewId, finestra: &ImageView<S>, cacao: &CacaoImageView) {
+    attach_base_state(finestra, &cacao.objc);
+
+    _ = view_id;
 }
 
 pub fn attach_label_state<S>(view_id: ViewId, finestra: &Label<S>, cacao: &CacaoLabel) {

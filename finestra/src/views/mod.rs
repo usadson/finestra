@@ -3,6 +3,7 @@
 
 mod base;
 mod button;
+mod image;
 mod label;
 mod stack;
 mod text_field;
@@ -11,6 +12,7 @@ use crate::AppDelegate;
 
 pub use self::base::*;
 pub use self::button::Button;
+pub use self::image::*;
 pub use self::label::Label;
 pub use self::stack::*;
 pub use self::text_field::*;
