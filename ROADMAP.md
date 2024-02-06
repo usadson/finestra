@@ -4,7 +4,7 @@
 - [x] Main window creation
 - [ ] Sub window creation
 - [ ] Icon assignment
-- [ ] Changing window title
+- [x] Changing window title
 - [ ] Window Menu
 
 ### 1.2. Components
