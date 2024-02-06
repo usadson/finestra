@@ -124,12 +124,15 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State
     fn build_native(
         &mut self,
         tree: &mut crate::event::ViewTree<State>,
-        _parent: windows::Win32::Foundation::HWND,
+        parent: windows::Win32::Foundation::HWND,
     ) -> crate::platform::win32::view::WinView {
-        use crate::platform::win32::view::{WinView, WinViewKind};
+        use crate::platform::win32::view::{WinButton, WinView, WinViewKind};
 
-        _ = &self.text;
-        WinView::new(tree.exchange_events_for_id(Default::default()), WinViewKind::Empty)
+        let button = self.text.with(|text| {
+            WinButton::new(parent, text)
+        });
+
+        WinView::new(tree.exchange_events_for_id(Default::default()), WinViewKind::Button(button))
     }
 }
 
