@@ -46,7 +46,7 @@
 - [x] Tool Tips
 
 #### 1.3.1. Theming
-- [ ] Honor System Theme by Default
+- [x] Honor System Theme by Default
 - [ ] Overriding Light/Dark Mode
 
 ### 1.5. Miscellaneous

@@ -1,12 +1,15 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
+use std::ffi::c_void;
 use std::marker::PhantomData;
+use std::mem::size_of_val;
 use std::rc::Rc;
 use std::{mem::size_of, sync::Once};
 
 use windows::core::PCSTR;
-use windows::Win32::Foundation::GetLastError;
+use windows::Win32::Foundation::{GetLastError, BOOL};
+use windows::Win32::Graphics::Dwm::{DwmSetWindowAttribute, DWMWA_USE_IMMERSIVE_DARK_MODE};
 use windows::Win32::Graphics::Gdi::{GetStockObject, UpdateWindow, BLACK_BRUSH, HDC, HOLLOW_BRUSH};
 use windows::Win32::UI::WindowsAndMessaging::*;
 use windows::Win32::{
@@ -219,6 +222,13 @@ pub fn create_window<Delegate, State: 'static>(config: WindowConfiguration) -> H
     }
 
     Hwnd::from(hwnd).subscribe_text_update(config.title.as_ref().as_state());
+    let value = BOOL(1);
+    unsafe {
+        let ptr = &value as *const BOOL;
+        let ptr = ptr as *const c_void;
+        DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ptr, size_of_val(&value) as _)
+            .unwrap();
+    }
 
     hwnd
 }
