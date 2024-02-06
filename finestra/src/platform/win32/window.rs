@@ -33,8 +33,9 @@ use windows::Win32::{
 };
 
 use crate::event::{EventHandlerMapRegistry, ViewTree};
-use crate::{AppDelegate, View, ViewId, WindowConfiguration};
+use crate::{AppDelegate, DialogBuilder, View, ViewId, WindowConfiguration};
 
+use super::dialog::Win32Dialog;
 use super::view::WinView;
 use super::wrapper::{ControlId, Hwnd};
 
@@ -156,8 +157,8 @@ impl<Delegate, State: 'static> WindowData<Delegate, State>
 }
 
 impl<Delegate, State> crate::WindowDelegator for Window<Delegate, State> {
-    fn create_dialog(&self, _text: std::borrow::Cow<'static, str>) -> crate::DialogBuilder {
-        todo!()
+    fn create_dialog(&self, text: std::borrow::Cow<'static, str>) -> crate::DialogBuilder {
+        DialogBuilder::new(Box::new(Win32Dialog::new(text.into_owned(), Hwnd::from(self.hwnd).get_text())))
     }
 }
 

@@ -3,6 +3,7 @@
 
 #[cfg(debug_assertions)]
 pub(crate) mod debug;
+pub(crate) mod dialog;
 pub(crate) mod dispatch;
 pub(crate) mod view;
 pub(crate) mod window;

@@ -3,7 +3,7 @@
 
 use std::ops::Deref;
 
-use windows::{core::PCSTR, Win32::{Foundation::{HWND, LPARAM, WPARAM}, Graphics::Gdi::{GetStockObject, DEFAULT_GUI_FONT, HFONT}, UI::WindowsAndMessaging::{DispatchMessageA, GetDlgCtrlID, GetMessageA, SendMessageA, SetWindowTextA, ShowWindow, TranslateMessage, MSG, WM_SETFONT}}};
+use windows::{core::PCSTR, Win32::{Foundation::{HWND, LPARAM, WPARAM}, Graphics::Gdi::{GetStockObject, DEFAULT_GUI_FONT, HFONT}, UI::WindowsAndMessaging::{DispatchMessageA, GetDlgCtrlID, GetMessageA, GetWindowTextA, GetWindowTextLengthA, SendMessageA, SetWindowTextA, ShowWindow, TranslateMessage, MSG, WM_SETFONT}}};
 use windows::Win32::UI::WindowsAndMessaging::SHOW_WINDOW_CMD;
 
 use crate::{State, StateChangeOrigin};
@@ -64,6 +64,21 @@ impl Hwnd {
 
     pub fn get_control_id(&self) -> ControlId {
         ControlId(unsafe { GetDlgCtrlID(self.inner) })
+    }
+
+    pub fn get_text(&self) -> String {
+        let length = unsafe { GetWindowTextLengthA(self.inner) };
+        let mut chars = Vec::new();
+        chars.resize((length + 1) as usize, 0u8);
+
+        unsafe {
+            GetWindowTextA(self.inner, chars.as_mut_slice());
+        }
+
+        match String::from_utf8(chars) {
+            Ok(str) => str,
+            Err(e) => String::from_utf8_lossy(e.as_bytes()).into_owned(),
+        }
     }
 
     pub fn show(&self, command: SHOW_WINDOW_CMD) {
