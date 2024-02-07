@@ -7,8 +7,7 @@ mod dynamic_wrapper;
 pub(crate) mod extensions;
 pub(crate) mod resources;
 pub(crate) mod state;
-mod nsalert;
-pub(crate) mod nsstackview;
+pub(crate) mod views;
 
 use std::borrow::Cow;
 use std::cell::RefCell;
@@ -26,8 +25,8 @@ use crate::{App, AppDelegate, DialogBuilder, View, Window, WindowDelegator};
 pub(crate) use self::dynamic_wrapper::DynamicViewWrapper;
 pub(crate) use self::dynamic_wrapper::LayoutExt;
 use self::extensions::WindowExtensions;
-use self::nsalert::NSAlert;
 use self::state::Event;
+pub(crate) use self::views::*;
 
 
 const BUNDLE_ID: &str = "com.tristangerritsen.finestra";

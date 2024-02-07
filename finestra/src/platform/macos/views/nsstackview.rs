@@ -9,7 +9,7 @@ use cacao::objc::{class, msg_send, sel, sel_impl};
 
 use crate::StackDirection;
 
-use super::DynamicViewWrapper;
+use crate::platform::macos::DynamicViewWrapper;
 
 pub struct NSStackView {
     pub objc: ObjcProperty,

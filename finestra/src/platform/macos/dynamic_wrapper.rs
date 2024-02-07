@@ -7,7 +7,7 @@ use cacao::{
 
 use crate::{Constraint, ConstraintAlignment, ViewId};
 
-use super::{cacao_delegates::MacOSTextFieldDelegate, nsstackview::NSStackView};
+use super::{cacao_delegates::MacOSTextFieldDelegate, NSStackView};
 
 /// This internal type, represents [`Layout`](cacao::layout::Layout) in an
 /// object-safe manner.
