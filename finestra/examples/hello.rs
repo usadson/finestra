@@ -8,8 +8,9 @@ struct Application;
 
 impl AppDelegate for Application {
     fn make_content_view(&mut self, _: &mut (), _: Window) -> impl finestra::View<Self> {
-        Label::new("Hello, world!")
+        TextBlock::new("Hello, world!\nWelcome to Finestra!")
             .with_color(Color::system(SystemColor::Teal))
+            .centered()
     }
 }
 

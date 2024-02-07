@@ -13,7 +13,7 @@
 - [ ] Calendar
 - [ ] Check Box
 - [x] Text Field (single line)
-- [ ] Text Field (multiline)
+- [x] Text Field (multiline)
 
 #### 1.2.2. Interactive Containers
 - [ ] Rich Text Document ([NSDocument](https://developer.apple.com/documentation/appkit/documents_data_and_pasteboard/developing_a_document-based_app?language=objc), [Rich Edit](https://learn.microsoft.com/en-us/windows/win32/controls/rich-edit-controls))
@@ -39,7 +39,7 @@
 - [ ] Web View
 
 ### 1.3. Customization
-- [ ] Alignment
+- [x] Alignment
 - [x] Setting foreground color of text components
 - [x] Setting background color
 - [ ] Setting font/typeface

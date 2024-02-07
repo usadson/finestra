@@ -6,6 +6,7 @@ mod button;
 mod image;
 mod label;
 mod stack;
+mod text_block;
 mod text_field;
 
 use crate::AppDelegate;
@@ -14,8 +15,9 @@ pub use self::base::*;
 pub use self::button::Button;
 pub use self::image::*;
 pub use self::label::Label;
-pub use self::stack::*;
-pub use self::text_field::*;
+pub use self::stack::{Stack, StackDirection};
+pub use self::text_block::TextBlock;
+pub use self::text_field::TextField;
 
 /// A generic graphical component.
 ///
