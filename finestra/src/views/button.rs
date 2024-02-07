@@ -111,7 +111,7 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State
             button.set_bezel_style(BezelStyle::Rounded);
         }
 
-        crate::platform::macos::state::attach_button_state(&self, &button);
+        crate::platform::macos::state::attach_button_state(self, &button);
 
         button.set_action(move || {
             App::<MacOSDelegate<Delegate, State>, Event>::dispatch_main(Event::ButtonClicked(id));

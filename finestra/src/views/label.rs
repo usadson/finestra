@@ -30,7 +30,7 @@ impl<State> Label<State> {
     pub fn new(text: impl Into<StateOrRaw<String>>) -> Self {
         Self {
             base: ViewBase::default(),
-            text: text.into().into(),
+            text: text.into(),
             text_color: StateOrRaw::Raw(Color::default()),
             background_color: StateOrRaw::Raw(Color::default()),
             event_handler_map: Default::default(),
@@ -87,7 +87,7 @@ impl<Delegate, State: 'static> View<Delegate, State> for Label<State>
         let view_id = tree.exchange_events_for_id(Default::default());
 
         let label = cacao::text::Label::new();
-        label.set_text(&self.text.clone_inner());
+        label.set_text(self.text.clone_inner());
 
         if let Some(color) = self.text_color.clone_inner().to_cacao() {
             label.set_text_color(color);
@@ -97,7 +97,7 @@ impl<Delegate, State: 'static> View<Delegate, State> for Label<State>
             label.set_background_color(color);
         }
 
-        crate::platform::macos::state::attach_label_state(view_id, &self, &label);
+        crate::platform::macos::state::attach_label_state(view_id, self, &label);
         label.into()
     }
 

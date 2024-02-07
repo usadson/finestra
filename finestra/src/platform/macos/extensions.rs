@@ -2,7 +2,7 @@
 // All Rights Reserved.
 
 use cacao::{
-    appkit::window::Window as CacaoWindow, color::Color, foundation::{id, NSString, NSUInteger, NO, YES}, layout::Layout, objc::{msg_send, runtime::Object, sel, sel_impl}
+    appkit::window::Window as CacaoWindow, color::Color, foundation::{id, NSString, NO, YES}, layout::Layout, objc::{msg_send, runtime::Object, sel, sel_impl}
 };
 
 use super::core_animation::CALayer;

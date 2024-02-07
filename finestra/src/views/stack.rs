@@ -28,7 +28,7 @@ impl<State, Delegate> Stack<State, Delegate> {
     pub fn new(direction: StackDirection) -> Self {
         Self {
             base: ViewBase::default(),
-            _phantom: PhantomData::default(),
+            _phantom: PhantomData,
 
             direction,
             children: Vec::new(),

@@ -16,6 +16,6 @@ impl AppDelegate for Application {
 }
 
 fn main() {
-    App::new(Application::default())
+    App::new(Application)
         .run();
 }

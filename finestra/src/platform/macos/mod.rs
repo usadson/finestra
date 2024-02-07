@@ -91,7 +91,7 @@ impl<Delegate, State: 'static> CacaoAppDelegate for MacOSDelegate<Delegate, Stat
         if let Some(state) = config.title.as_ref().as_state() {
             let window = self.window.clone();
             state.add_listener(move |value| {
-                window.set_title(&value);
+                window.set_title(value);
             });
         }
 

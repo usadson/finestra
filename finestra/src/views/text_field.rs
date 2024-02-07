@@ -75,11 +75,11 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for TextField<St
 
         self.placeholder_text.with(|placeholder| {
             if !placeholder.is_empty() {
-                text_field.set_placeholder_text(&placeholder);
+                text_field.set_placeholder_text(placeholder);
             }
         });
 
-        crate::platform::macos::state::attach_text_field_state(view_id, &self, &text_field);
+        crate::platform::macos::state::attach_text_field_state(view_id, self, &text_field);
         text_field.width.constraint_equal_to_constant(100.).set_active(true);
         text_field.into()
     }

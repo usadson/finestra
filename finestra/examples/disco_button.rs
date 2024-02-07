@@ -36,6 +36,6 @@ struct AppState {
 }
 
 fn main() {
-    App::with_state(Application::default(), AppState::default())
+    App::with_state(Application, AppState::default())
         .run();
 }

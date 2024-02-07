@@ -11,6 +11,12 @@ pub struct ImageView<State> {
     event_handler_map: EventHandlerMap<State>,
 }
 
+impl<State> Default for ImageView<State> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<State> ImageView<State> {
     /// Creates a new [`ImageView`].
     #[must_use]
@@ -79,7 +85,7 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for ImageView<St
 
         image_view.set_frame(CGRect::new(&CGPoint::new(10.0, 10.0), &CGSize::new(200.0, 200.0)));
 
-        crate::platform::macos::state::attach_image_view_state(id, &self, &image_view);
+        crate::platform::macos::state::attach_image_view_state(id, self, &image_view);
 
         let mut obj: DynamicViewWrapper = image_view.into();
 
