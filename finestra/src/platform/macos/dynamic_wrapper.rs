@@ -5,12 +5,64 @@ use cacao::{
     button::Button, image::ImageView, input::TextField, layout::{Layout, LayoutAnchorX, LayoutAnchorY}, listview::{ListView, ListViewRow}, progress::ProgressIndicator, scrollview::ScrollView, select::Select, switch::Switch, text::Label, utils::properties::ObjcProperty, view::View
 };
 
-use super::{cacao_delegates::MacOSTextFieldDelegate, nsstackview::NSStackView};
+use crate::{Constraint, ConstraintAlignment, ViewId};
 
+use super::{cacao_delegates::MacOSTextFieldDelegate, nsstackview::NSStackView};
 
 /// This internal type, represents [`Layout`](cacao::layout::Layout) in an
 /// object-safe manner.
-pub enum DynamicViewWrapper {
+pub struct DynamicViewWrapper {
+    kind: DynamicViewWrapperKind,
+    constraints: Vec<Constraint>,
+}
+
+impl DynamicViewWrapper {
+    pub(crate) fn constraints(&self) -> &[Constraint] {
+        &self.constraints
+    }
+
+    pub(crate) fn add_constraints_to_parent_box(&mut self, parent_id: ViewId) {
+        self.add_constraint(Constraint {
+            alignment: ConstraintAlignment::Top,
+            reference_id: parent_id,
+            reference_alignment: ConstraintAlignment::Top,
+        });
+
+        self.add_constraint(Constraint {
+            alignment: ConstraintAlignment::Bottom,
+            reference_id: parent_id,
+            reference_alignment: ConstraintAlignment::Bottom,
+        });
+
+        self.add_constraint(Constraint {
+            alignment: ConstraintAlignment::Left,
+            reference_id: parent_id,
+            reference_alignment: ConstraintAlignment::Left,
+        });
+
+        self.add_constraint(Constraint {
+            alignment: ConstraintAlignment::Right,
+            reference_id: parent_id,
+            reference_alignment: ConstraintAlignment::Right,
+        });
+    }
+
+    pub(crate) fn add_constraint(&mut self, constraint: Constraint) {
+        self.constraints.push(constraint);
+    }
+}
+
+impl DynamicViewWrapper {
+    pub(crate) fn add_to_view<V: Layout>(&self, view: &V) {
+        self.kind.add_to_view(view)
+    }
+
+    pub(crate) fn objc(&self) -> &ObjcProperty {
+        self.kind.objc()
+    }
+}
+
+pub enum DynamicViewWrapperKind {
     Button(Button),
     ImageView(ImageView),
     Label(Label),
@@ -26,7 +78,7 @@ pub enum DynamicViewWrapper {
     View(View),
 }
 
-impl DynamicViewWrapper {
+impl DynamicViewWrapperKind {
     /// The inverse of [`Layout::add_subview()`]
     pub(crate) fn add_to_view<V: Layout>(&self, view: &V) {
         match self {
@@ -95,76 +147,220 @@ impl DynamicViewWrapper {
             Self::View(subview) => &subview.objc,
         }
     }
+
+    pub(crate) fn layout_constraint_top(&self) -> &LayoutAnchorY {
+        match self {
+            Self::Button(subview) => &subview.top,
+            Self::ImageView(subview) => &subview.top,
+            Self::Label(subview) => &subview.top,
+            Self::ListView(subview) => &subview.top,
+            Self::ListViewRow(subview) => &subview.top,
+            Self::ProgressIndicator(subview) => &subview.top,
+            Self::ScrollView(subview) => &subview.top,
+            Self::Select(subview) => &subview.top,
+            Self::StackView(..) => todo!(),
+            Self::Switch(subview) => &subview.top,
+            Self::TextField(subview) => &subview.top,
+            Self::View(subview) => &subview.top,
+        }
+    }
+
+    pub(crate) fn layout_constraint_bottom(&self) -> &LayoutAnchorY {
+        match self {
+            Self::Button(subview) => &subview.bottom,
+            Self::ImageView(subview) => &subview.bottom,
+            Self::Label(subview) => &subview.bottom,
+            Self::ListView(subview) => &subview.bottom,
+            Self::ListViewRow(subview) => &subview.bottom,
+            Self::ProgressIndicator(subview) => &subview.bottom,
+            Self::ScrollView(subview) => &subview.bottom,
+            Self::Select(subview) => &subview.bottom,
+            Self::StackView(..) => todo!(),
+            Self::Switch(subview) => &subview.bottom,
+            Self::TextField(subview) => &subview.bottom,
+            Self::View(subview) => &subview.bottom,
+        }
+    }
+
+    pub(crate) fn layout_constraint_left(&self) -> &LayoutAnchorX {
+        match self {
+            Self::Button(subview) => &subview.left,
+            Self::ImageView(subview) => &subview.left,
+            Self::Label(subview) => &subview.left,
+            Self::ListView(subview) => &subview.left,
+            Self::ListViewRow(subview) => &subview.left,
+            Self::ProgressIndicator(subview) => &subview.left,
+            Self::ScrollView(subview) => &subview.left,
+            Self::Select(subview) => &subview.left,
+            Self::StackView(..) => todo!(),
+            Self::Switch(subview) => &subview.left,
+            Self::TextField(subview) => &subview.left,
+            Self::View(subview) => &subview.left,
+        }
+    }
+
+    pub(crate) fn layout_constraint_right(&self) -> &LayoutAnchorX {
+        match self {
+            Self::Button(subview) => &subview.right,
+            Self::ImageView(subview) => &subview.right,
+            Self::Label(subview) => &subview.right,
+            Self::ListView(subview) => &subview.right,
+            Self::ListViewRow(subview) => &subview.right,
+            Self::ProgressIndicator(subview) => &subview.right,
+            Self::ScrollView(subview) => &subview.right,
+            Self::Select(subview) => &subview.right,
+            Self::StackView(..) => todo!(),
+            Self::Switch(subview) => &subview.right,
+            Self::TextField(subview) => &subview.right,
+            Self::View(subview) => &subview.right,
+        }
+    }
 }
 
-impl From<Button> for DynamicViewWrapper {
+impl From<Button> for DynamicViewWrapperKind {
     fn from(value: Button) -> Self {
         Self::Button(value)
     }
 }
 
-impl From<ImageView> for DynamicViewWrapper {
+impl From<ImageView> for DynamicViewWrapperKind {
     fn from(value: ImageView) -> Self {
         Self::ImageView(value)
     }
 }
 
-impl From<Label> for DynamicViewWrapper {
+impl From<Label> for DynamicViewWrapperKind {
     fn from(value: Label) -> Self {
         Self::Label(value)
     }
 }
 
-impl From<ListView> for DynamicViewWrapper {
+impl From<ListView> for DynamicViewWrapperKind {
     fn from(value: ListView) -> Self {
         Self::ListView(value)
     }
 }
 
-impl From<ListViewRow> for DynamicViewWrapper {
+impl From<ListViewRow> for DynamicViewWrapperKind {
     fn from(value: ListViewRow) -> Self {
         Self::ListViewRow(value)
     }
 }
 
-impl From<NSStackView> for DynamicViewWrapper {
+impl From<NSStackView> for DynamicViewWrapperKind {
     fn from(value: NSStackView) -> Self {
         Self::StackView(value)
     }
 }
 
-impl From<ProgressIndicator> for DynamicViewWrapper {
+impl From<ProgressIndicator> for DynamicViewWrapperKind {
     fn from(value: ProgressIndicator) -> Self {
         Self::ProgressIndicator(value)
     }
 }
 
-impl From<ScrollView> for DynamicViewWrapper {
+impl From<ScrollView> for DynamicViewWrapperKind {
     fn from(value: ScrollView) -> Self {
         Self::ScrollView(value)
     }
 }
 
-impl From<Select> for DynamicViewWrapper {
+impl From<Select> for DynamicViewWrapperKind {
     fn from(value: Select) -> Self {
         Self::Select(value)
     }
 }
 
-impl From<Switch> for DynamicViewWrapper {
+impl From<Switch> for DynamicViewWrapperKind {
     fn from(value: Switch) -> Self {
         Self::Switch(value)
     }
 }
 
-impl From<TextField<MacOSTextFieldDelegate>> for DynamicViewWrapper {
+impl From<TextField<MacOSTextFieldDelegate>> for DynamicViewWrapperKind {
     fn from(value: TextField<MacOSTextFieldDelegate>) -> Self {
         Self::TextField(value)
     }
 }
 
-impl From<View> for DynamicViewWrapper {
+impl From<View> for DynamicViewWrapperKind {
     fn from(value: View) -> Self {
         Self::View(value)
+    }
+}
+
+impl<T> From<T> for DynamicViewWrapper
+        where T: Into<DynamicViewWrapperKind> {
+    fn from(value: T) -> Self {
+        Self {
+            kind: value.into(),
+            constraints: Vec::new(),
+        }
+    }
+}
+
+pub(crate) trait LayoutExt {
+    fn layout_constraint_center_x(&self) -> &LayoutAnchorX;
+
+    fn layout_constraint_center_y(&self) -> &LayoutAnchorY;
+
+    fn layout_constraint_left(&self) -> &LayoutAnchorX;
+
+    fn layout_constraint_right(&self) -> &LayoutAnchorX;
+
+    fn layout_constraint_top(&self) -> &LayoutAnchorY;
+
+    fn layout_constraint_bottom(&self) -> &LayoutAnchorY;
+}
+
+impl LayoutExt for DynamicViewWrapper {
+    fn layout_constraint_center_x(&self) -> &LayoutAnchorX {
+        self.kind.layout_constraint_center_x()
+    }
+
+    fn layout_constraint_center_y(&self) -> &LayoutAnchorY {
+        self.kind.layout_constraint_center_y()
+    }
+
+    fn layout_constraint_left(&self) -> &LayoutAnchorX {
+        self.kind.layout_constraint_left()
+    }
+
+    fn layout_constraint_right(&self) -> &LayoutAnchorX {
+        self.kind.layout_constraint_right()
+    }
+
+    fn layout_constraint_top(&self) -> &LayoutAnchorY {
+        self.kind.layout_constraint_top()
+    }
+
+    fn layout_constraint_bottom(&self) -> &LayoutAnchorY {
+        self.kind.layout_constraint_bottom()
+    }
+}
+
+impl<S> LayoutExt for View<S> {
+    fn layout_constraint_center_x(&self) -> &LayoutAnchorX {
+        &self.center_x
+    }
+
+    fn layout_constraint_center_y(&self) -> &LayoutAnchorY {
+        &self.center_y
+    }
+
+    fn layout_constraint_left(&self) -> &LayoutAnchorX {
+        &self.left
+    }
+
+    fn layout_constraint_right(&self) -> &LayoutAnchorX {
+        &self.right
+    }
+
+    fn layout_constraint_top(&self) -> &LayoutAnchorY {
+        &self.top
+    }
+
+    fn layout_constraint_bottom(&self) -> &LayoutAnchorY {
+        &self.bottom
     }
 }

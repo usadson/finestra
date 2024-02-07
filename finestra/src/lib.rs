@@ -11,6 +11,7 @@ pub use euclid;
 mod app;
 mod error;
 mod event;
+mod layout;
 mod platform;
 mod resources;
 mod state;
@@ -19,6 +20,7 @@ mod window;
 
 pub use self::app::*;
 pub use self::error::*;
+pub(crate) use self::layout::*;
 pub use self::resources::*;
 pub use self::state::*;
 pub use self::views::*;

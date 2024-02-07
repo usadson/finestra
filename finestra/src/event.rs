@@ -54,6 +54,8 @@ pub struct ViewTree<State> {
 
     #[cfg(target_os = "macos")]
     dispatcher: StatefulEventDispatcher<State>,
+
+    parent_id: Option<ViewId>,
 }
 
 impl<State: 'static> ViewTree<State> {
@@ -62,6 +64,7 @@ impl<State: 'static> ViewTree<State> {
         Self {
             id_generator: Default::default(),
             registry,
+            parent_id: None,
         }
     }
 
@@ -71,6 +74,7 @@ impl<State: 'static> ViewTree<State> {
             id_generator: Default::default(),
             registry,
             dispatcher,
+            parent_id: None,
         }
     }
 
@@ -80,6 +84,7 @@ impl<State: 'static> ViewTree<State> {
         id
     }
 
+    #[cfg(windows)]
     pub(crate) fn put_event_handlers_with_id(&mut self, id: ViewId, map: EventHandlerMap<State>) -> ViewId {
         self.registry.map.insert(id, map);
         id
@@ -88,6 +93,14 @@ impl<State: 'static> ViewTree<State> {
     #[cfg(target_os = "macos")]
     pub(crate) fn create_dispatcher(&self) -> Box<dyn EventDispatcher> {
         Box::new(self.dispatcher.clone())
+    }
+
+    pub(crate) fn parent_id(&self) -> Option<ViewId> {
+        self.parent_id
+    }
+
+    pub(crate) fn set_parent_id(&mut self, id: ViewId) {
+        self.parent_id = Some(id);
     }
 }
 

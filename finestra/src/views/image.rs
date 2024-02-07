@@ -53,6 +53,7 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for ImageView<St
         use cacao::image::ImageView as CocoaImageView;
         use cacao::layout::Layout;
 
+        use crate::platform::macos::DynamicViewWrapper;
         use crate::ImageKind;
 
         let map = std::mem::take(&mut self.event_handler_map);
@@ -80,7 +81,13 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for ImageView<St
 
         crate::platform::macos::state::attach_image_view_state(id, &self, &image_view);
 
-        image_view.into()
+        let mut obj: DynamicViewWrapper = image_view.into();
+
+        if let Some(parent) = tree.parent_id() {
+            obj.add_constraints_to_parent_box(parent);
+        }
+
+        obj
     }
 
     /// Internal API: creates a native view (for Win32).
