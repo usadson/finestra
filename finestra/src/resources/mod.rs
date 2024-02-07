@@ -2,5 +2,7 @@
 // All Rights Reserved.
 
 mod color;
+mod image;
 
 pub use self::color::*;
+pub use self::image::*;

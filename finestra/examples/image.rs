@@ -12,7 +12,9 @@ fn get_image_file() -> std::path::PathBuf {
 
     let directory = "/System/Library/Desktop Pictures";
     for entry in read_dir(directory).unwrap().flatten() {
-        return entry.path();
+        if entry.file_name().to_string_lossy().ends_with(".heic") {
+            return entry.path();
+        }
     }
 
     panic!("Failed to find a macOS picture")
@@ -32,6 +34,7 @@ impl AppDelegate<AppState> for Application {
     fn make_content_view(&mut self, state: &mut AppState, _: Window) -> impl finestra::View<Self, AppState>  {
         _ = state;
         ImageView::new()
+            .with(Image::with_contents_of_file(get_image_file()))
     }
 }
 

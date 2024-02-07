@@ -1,12 +1,13 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use crate::{event::EventHandlerMap, AppDelegate, View, ViewBase};
+use crate::{event::EventHandlerMap, AppDelegate, Image, View, ViewBase};
 
 use super::base::BaseView;
 
 pub struct ImageView<State> {
     pub(crate) base: ViewBase,
+    image: Image,
     event_handler_map: EventHandlerMap<State>,
 }
 
@@ -16,8 +17,18 @@ impl<State> ImageView<State> {
     pub fn new() -> Self {
         Self {
             base: ViewBase::default(),
+            image: Image::default(),
             event_handler_map: Default::default(),
         }
+    }
+
+    pub fn with(mut self, image: Image) -> Self {
+        self.set_image(image);
+        self
+    }
+
+    pub fn set_image(&mut self, image: Image) {
+        self.image = image;
     }
 }
 
@@ -35,13 +46,37 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for ImageView<St
         where Delegate: 'static, State: 'static {
     #[cfg(target_os = "macos")]
     fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
+        use cacao::core_graphics::geometry::CGPoint;
+        use cacao::core_graphics::geometry::CGRect;
+        use cacao::core_graphics::geometry::CGSize;
+        use cacao::image::Image as CocoaImage;
         use cacao::image::ImageView as CocoaImageView;
+        use cacao::layout::Layout;
 
+        use crate::ImageKind;
 
         let map = std::mem::take(&mut self.event_handler_map);
         let id = tree.exchange_events_for_id(map);
 
         let image_view = CocoaImageView::new();
+
+        let image = match self.image.kind() {
+            ImageKind::File(file) => Some(
+                CocoaImage::with_contents_of_file(
+                    file.as_path().to_str().unwrap()
+                )
+            ),
+
+            ImageKind::None => None,
+        };
+
+        if let Some(image) = image {
+            // TODO: don't be lazy and leak the image
+            let image = Box::leak(Box::new(image));
+            image_view.set_image(&*image);
+        }
+
+        image_view.set_frame(CGRect::new(&CGPoint::new(10.0, 10.0), &CGSize::new(200.0, 200.0)));
 
         crate::platform::macos::state::attach_image_view_state(id, &self, &image_view);
 
