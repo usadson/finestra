@@ -2,7 +2,6 @@
 // All Rights Reserved.
 
 pub(crate) mod cacao_delegates;
-mod core_animation;
 mod dynamic_wrapper;
 pub(crate) mod extensions;
 pub(crate) mod resources;
