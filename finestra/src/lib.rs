@@ -5,7 +5,7 @@
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::default_trait_access)]
 
-pub type Number = f32;
+pub(crate) type Number = f32;
 pub use euclid;
 
 mod app;
