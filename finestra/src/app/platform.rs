@@ -53,7 +53,7 @@ impl Default for UIBackend {
     }
 }
 
-#[cfg(target_os = "windows")]
+#[cfg(not(target_os = "macos"))]
 impl Default for UIBackend {
     fn default() -> Self {
         Self::Win32
