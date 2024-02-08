@@ -5,15 +5,51 @@ use std::{fmt::Debug, sync::{Arc, RwLock}};
 
 use crate::{Color, SystemColor, ViewId};
 
+/// A [`State`]ful [`Color`].
 pub type ColorValue = State<Color>;
+
+/// A [`State`]ful [`String`].
 pub type TextValue = State<String>;
 type Callback<T> = dyn Fn(&T);
 
+/// The [`State`] primitive is the tool to modify the characteristics of
+/// [`Views`](crate::View), by e.g. modifying a [`Label`](crate::Label)
+/// when a [`Button`](crate::Button) is clicked:
+///
+/// ```no_run
+/// # use finestra::*;
+///
+/// struct Application;
+///
+/// impl AppDelegate<AppState> for Application {
+///     fn make_content_view(&mut self, state: &mut AppState, _: Window) -> impl finestra::View<Self, AppState> {
+///         state.label.set("Clicked: 0");
+///
+///         Stack::vertical()
+///             .with(Label::new(&state.label))
+///             .with(Button::new("Press")
+///                 .with_on_click(|state: &mut AppState, _| {
+///                     state.count += 1;
+///                     state.label.set(format!("Clicked: {}", state.count));
+///                 }))
+///     }
+/// }
+///
+/// #[derive(Debug, Default)]
+/// struct AppState {
+///     count: usize,
+///     label: TextValue,
+/// }
+/// ```
+///
+/// For more information, see the [crate documentation](https://github.com/usadson/finestra).
 pub struct State<T> {
     inner: Arc<RwLock<StateInner<T>>>,
 }
 
 impl<T> State<T> {
+    /// Create a new [`State`] with the given value. Note: you can use
+    /// [`State::default()`] if your wrapped value supports it :)
     pub fn new(value: T) -> Self {
         Self {
             inner: Arc::new(RwLock::new(StateInner {
@@ -23,25 +59,58 @@ impl<T> State<T> {
         }
     }
 
+    /// Set the new value of the state, which will notify the
+    /// [`listeners`](Self::add_listener).
     pub fn set(&self, value: impl Into<T>) {
         self.set_with_origin(value, StateChangeOrigin::User);
     }
 
+    /// Get the value within the state by using a visitor method.
+    ///
+    /// ```
+    /// # use finestra::State;
+    /// let state = State::new("Hello, world!".to_string());
+    ///
+    /// state.with(|value| {
+    ///     println!("Value is: {value}");
+    /// });
+    /// ```
     pub fn with<F: FnOnce(&T) -> R, R>(&self, f: F) -> R {
         let v = self.inner.as_ref().read().unwrap();
         f(&v.value)
     }
 
+    /// Clone the inner value. Note: you can also use [`State::with()`] if you
+    /// only need a temporary reference.
+    ///
+    /// ```
+    /// # use finestra::State;
+    /// let state = State::new("Hello, world!".to_string());
+    /// let cloned: String = state.clone_inner();
+    /// ```
     pub fn clone_inner(&self) -> T
             where T: Clone {
         self.with(Clone::clone)
     }
 
+    /// Get a mutable reference to the value within the state by using a
+    /// visitor method.
+    ///
+    /// ```
+    /// # use finestra::State;
+    /// let state = State::new("Hello, world!".to_string());
+    ///
+    /// state.with(|value| {
+    ///     println!("Value is: {value}");
+    /// });
+    /// ```
     pub fn with_mut<F: FnOnce(&mut T) -> R, R>(&self, f: F) -> R {
         let mut v = self.inner.as_ref().write().unwrap();
         f(&mut v.value)
     }
 
+    /// Get subscribed by changes to the State. Note: the callback won't get
+    /// invoked for the initial value, only for changes.
     pub fn add_listener<F: Fn(&T) + 'static>(&self, callback: F) {
         self.add_listener_with_origin(callback, StateChangeOrigin::User);
     }
@@ -65,6 +134,9 @@ impl<T> State<T> {
     }
 }
 
+/// A convenient wrapper for [`State`] or the "raw" value. A bunch of APIs let
+/// you call them with either of them, and this wrapper provides easy [`Into`]
+/// implementations.
 #[derive(Debug)]
 pub enum StateOrRaw<T> {
     Raw(T),
@@ -72,6 +144,16 @@ pub enum StateOrRaw<T> {
 }
 
 impl<T> StateOrRaw<T> {
+    /// Get the value within, by using a visitor method.
+    ///
+    /// ```
+    /// # use finestra::StateOrRaw;
+    /// let state = StateOrRaw::new("Hello, world!".to_string());
+    ///
+    /// state.with(|value| {
+    ///     println!("Value is: {value}");
+    /// });
+    /// ```
     pub fn with<F: FnOnce(&T) -> R, R>(&self, f: F) -> R {
         match self {
             Self::Raw(t) => f(t),
@@ -79,11 +161,20 @@ impl<T> StateOrRaw<T> {
         }
     }
 
+    /// Clone the inner value. Note: you can also use [`StateOrRaw::with()`] if
+    /// you only need a temporary reference.
+    ///
+    /// ```
+    /// # use finestra::StateOrRaw;
+    /// let value = StateOrRaw::Raw("Hello, world!".to_string());
+    /// let cloned: String = value.clone_inner();
+    /// ```
     pub fn clone_inner(&self) -> T
             where T: Clone {
         self.with(Clone::clone)
     }
 
+    /// Get the [`State`] if applicable, otherwise [`None`].
     pub fn as_state(&self) -> Option<State<T>> {
         if let Self::State(state) = &self {
             Some(state.clone())
