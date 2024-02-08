@@ -114,7 +114,7 @@ dependencies = [
 
 [[package]]
 name = "finestra"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "cacao",
  "dashmap",
@@ -319,7 +319,7 @@ dependencies = [
 
 [[package]]
 name = "showcase"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "finestra",
 ]
