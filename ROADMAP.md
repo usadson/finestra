@@ -12,7 +12,7 @@
 #### 1.2.1. Interactive
 - [x] Button
 - [ ] Calendar
-- [ ] Check Box
+- [x] Check Box
 - [ ] Color Picker
 - [x] Text Field (single line)
 - [x] Text Field (multiline)

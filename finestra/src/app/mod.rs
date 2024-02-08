@@ -73,7 +73,10 @@ impl<Delegate, State: 'static> App<Delegate, State>
     ///     label: State<String>,
     /// }
     ///
-    /// let app = App::with_state((), AppState::default());
+    /// struct MyApp;
+    /// impl AppDelegate<AppState> for MyApp {}
+    ///
+    /// let app = App::with_state(MyApp, AppState::default());
     /// app.run();
     /// ```
     pub fn with_state<NewState>(delegate: Delegate, state: NewState) -> App<Delegate, NewState> {

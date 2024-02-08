@@ -64,6 +64,18 @@ impl<State> EventDispatcher for StatefulEventDispatcher<State> {
                 (handler)(&mut state, self.window.clone());
             }
 
+            Event::CheckboxChanged(view_id, is_checked) => {
+                let Some(handler) = self.event_registry.map.get(&view_id) else {
+                    return;
+                };
+
+                let Some(handler) = &handler.checked else {
+                    return;
+                };
+
+                (handler)(&mut state, is_checked, self.window.clone());
+            }
+
             Event::TextFieldChanged(view_id, text) => {
                 let Some(handler) = self.event_registry.map.get(&view_id) else {
                     return;

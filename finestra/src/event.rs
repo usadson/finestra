@@ -12,6 +12,9 @@ use crate::Window;
 type EventHandlerCallback<State> = dyn Fn(&mut State, Window);
 type EventHandler<State> = Option<Box<EventHandlerCallback<State>>>;
 
+type BoolEventHandlerCallback<State> = dyn Fn(&mut State, bool, Window);
+type BoolEventHandler<State> = Option<Box<BoolEventHandlerCallback<State>>>;
+
 type TextEventHandlerCallback<State> = dyn Fn(&mut State, String, Window);
 type TextEventHandler<State> = Option<Box<TextEventHandlerCallback<State>>>;
 
@@ -20,6 +23,7 @@ pub(crate) struct ViewId(pub usize);
 
 pub(crate) struct EventHandlerMap<State> {
     pub(crate) click: EventHandler<State>,
+    pub(crate) checked: BoolEventHandler<State>,
     pub(crate) text_changed: TextEventHandler<State>,
 }
 
@@ -27,6 +31,7 @@ impl<State> Default for EventHandlerMap<State> {
     fn default() -> Self {
         Self {
             click: None,
+            checked: None,
             text_changed: None,
         }
     }

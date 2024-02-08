@@ -134,6 +134,9 @@ impl<T> State<T> {
     }
 }
 
+unsafe impl<T> Send for State<T> {}
+unsafe impl<T> Sync for State<T> {}
+
 /// A convenient wrapper for [`State`] or the "raw" value. A bunch of APIs let
 /// you call them with either of them, and this wrapper provides easy [`Into`]
 /// implementations.
@@ -148,7 +151,7 @@ impl<T> StateOrRaw<T> {
     ///
     /// ```
     /// # use finestra::StateOrRaw;
-    /// let state = StateOrRaw::new("Hello, world!".to_string());
+    /// let state = StateOrRaw::Raw("Hello, world!".to_string());
     ///
     /// state.with(|value| {
     ///     println!("Value is: {value}");
@@ -237,6 +240,7 @@ impl<T> Debug for State<T> {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[allow(unused)]
 pub(crate) enum StateChangeOrigin {
     User,
     Owner(ViewId),

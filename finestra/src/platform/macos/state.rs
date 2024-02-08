@@ -8,7 +8,7 @@ use cacao::input::TextField as CacaoTextField;
 use cacao::text::Label as CacaoLabel;
 use cacao::image::ImageView as CacaoImageView;
 
-use crate::{BaseView, Color, ImageView, StateChangeOrigin, StateOrRaw, TextAlignment, TextBlock, TextField};
+use crate::{BaseView, Checkbox, Color, ImageView, StateChangeOrigin, StateOrRaw, TextAlignment, TextBlock, TextField};
 use crate::{event::ViewId, Button, Label};
 
 use super::resources::ToCacao;
@@ -17,17 +17,25 @@ use super::resources::ToCacao;
 pub(crate) enum Event {
     ButtonClicked(ViewId),
     TextFieldChanged(ViewId, String),
+    CheckboxChanged(ViewId, bool),
 }
 
 pub fn attach_base_state(finestra: &dyn BaseView, objc: &ObjcProperty) {
     hook_tooltip_state(objc, &finestra.base().tooltip);
 }
 
-pub fn attach_button_state<S>(finestra: &Button<S>, cacao: &CacaoButton) {
+pub fn attach_button_state<S>(view_id: ViewId, finestra: &Button<S>, cacao: &CacaoButton) {
     attach_base_state(finestra, &cacao.objc);
     hook_background_color_state(&cacao.objc, &finestra.background_color);
     hook_text_color_state(&cacao.objc, &finestra.text_color);
-    hook_title_state(&cacao.objc, &finestra.text);
+    hook_title_state(view_id, &cacao.objc, &finestra.text);
+}
+
+pub fn attach_checkbox_state<S>(view_id: ViewId, finestra: &Checkbox<S>, cacao: &CacaoButton) {
+    attach_base_state(finestra, &cacao.objc);
+    hook_background_color_state(&cacao.objc, &finestra.background_color);
+    hook_text_color_state(&cacao.objc, &finestra.text_color);
+    hook_title_state(view_id, &cacao.objc, &finestra.text);
 }
 
 pub fn attach_image_view_state<S>(view_id: ViewId, finestra: &ImageView<S>, cacao: &CacaoImageView) {
@@ -118,19 +126,19 @@ fn hook_text_color_state(objc: &ObjcProperty, color: &StateOrRaw<Color>) {
     });
 }
 
-fn hook_title_state(objc: &ObjcProperty, text: &StateOrRaw<String>) {
+fn hook_title_state(view_id: ViewId, objc: &ObjcProperty, text: &StateOrRaw<String>) {
     let StateOrRaw::State(text_state) = &text else {
         return;
     };
 
     let objc = objc.clone();
-    text_state.add_listener(move |val| {
+    text_state.add_listener_with_origin(move |val| {
         let s = NSString::new(val);
 
         objc.with_mut(|obj| unsafe {
             let _: () = msg_send![obj, setTitle:&*s];
         });
-    });
+    }, StateChangeOrigin::Owner(view_id));
 }
 
 fn hook_tooltip_state(objc: &ObjcProperty, text: &StateOrRaw<String>) {

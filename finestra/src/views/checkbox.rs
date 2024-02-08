@@ -10,19 +10,20 @@ use super::base::BaseView;
 /// ```
 /// # // This is usually used in a context where the `State` generic parameter
 /// # // is inferred by the compiler.
-/// # type Button = finestra::Button<()>;
-/// let button = Button::new("Click Me");
+/// # type Checkbox = finestra::Checkbox<()>;
+/// let checkbox = Checkbox::new("Click Me");
 /// ```
-pub struct Button<State> {
+pub struct Checkbox<State> {
     pub(crate) base: ViewBase,
     pub(crate) text: StateOrRaw<String>,
     pub(crate) text_color: StateOrRaw<Color>,
     pub(crate) background_color: StateOrRaw<Color>,
+    pub(crate) checked: StateOrRaw<bool>,
     event_handler_map: EventHandlerMap<State>,
 }
 
-impl<State> Button<State> {
-    /// Creates a new [`Button`] with the associated string.
+impl<State> Checkbox<State> {
+    /// Creates a new [`Checkbox`] with the associated string.
     #[must_use]
     pub fn new(text: impl Into<StateOrRaw<String>>) -> Self {
         Self {
@@ -30,16 +31,17 @@ impl<State> Button<State> {
             text: text.into(),
             text_color: StateOrRaw::Raw(Color::default()),
             background_color: StateOrRaw::Raw(Color::default()),
+            checked: StateOrRaw::State(crate::State::new(false)),
             event_handler_map: Default::default(),
         }
     }
 
-    pub fn set_on_click(&mut self, action: impl Fn(&mut State, Window) + 'static) {
-        self.event_handler_map.click = Some(Box::new(action));
+    pub fn set_on_checked(&mut self, action: impl Fn(&mut State, bool, Window) + 'static) {
+        self.event_handler_map.checked = Some(Box::new(action));
     }
 
-    pub fn with_on_click(mut self, action: impl Fn(&mut State, Window) + 'static) -> Self {
-        self.event_handler_map.click = Some(Box::new(action));
+    pub fn with_on_checked(mut self, action: impl Fn(&mut State, bool, Window) + 'static) -> Self {
+        self.set_on_checked(action);
         self
     }
 
@@ -61,20 +63,20 @@ impl<State> Button<State> {
         }
     }
 
-    /// Sets the text color of the [`Button`]. Use [`Button::with_text_color()`]
+    /// Sets the text color of the [`Checkbox`]. Use [`Checkbox::with_text_color()`]
     /// to avoid making a `mut` variable.
     pub fn set_text_color(&mut self, color: impl Into<StateOrRaw<Color>>) {
         self.text_color = color.into();
     }
 
-    /// Sets the background color of the [`Button`]. Use
-    /// [`Button::with_background_color()`] to avoid making a `mut` variable.
+    /// Sets the background color of the [`Checkbox`]. Use
+    /// [`Checkbox::with_background_color()`] to avoid making a `mut` variable.
     pub fn set_background_color(&mut self, color: impl Into<StateOrRaw<Color>>) {
         self.background_color = color.into();
     }
 }
 
-impl<State> BaseView for Button<State> {
+impl<State> BaseView for Checkbox<State> {
     fn base(&self) -> &ViewBase {
         &self.base
     }
@@ -84,12 +86,12 @@ impl<State> BaseView for Button<State> {
     }
 }
 
-impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State>
+impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Checkbox<State>
         where Delegate: 'static, State: 'static {
     #[cfg(target_os = "macos")]
     fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
         use cacao::{appkit::App, button::BezelStyle};
-        use crate::platform::macos::extensions::ButtonExtensions;
+        use crate::platform::macos::extensions::{ButtonExtensions, NSButtonType};
 
         use crate::platform::macos::{
             resources::ToCacao, state::Event, MacOSDelegate
@@ -98,25 +100,31 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State
         let map = std::mem::take(&mut self.event_handler_map);
         let id = tree.exchange_events_for_id(map);
 
-        let mut button = self.text.with(|text| {
+        let mut checkbox = self.text.with(|text| {
             cacao::button::Button::new(text)
         });
 
+        checkbox.set_button_type(NSButtonType::Switch);
+
         if let Some(color) = self.text_color.clone_inner().to_cacao() {
-            button.set_text_color(color);
+            checkbox.set_text_color(color);
         }
 
         if let Some(color) = self.background_color.clone_inner().to_cacao() {
-            button.set_bezel_color(color);
-            button.set_bezel_style(BezelStyle::Rounded);
+            checkbox.set_bezel_color(color);
+            checkbox.set_bezel_style(BezelStyle::Rounded);
         }
 
-        crate::platform::macos::state::attach_button_state(id, self, &button);
+        crate::platform::macos::state::attach_checkbox_state(id, self, &checkbox);
 
-        button.set_action(move || {
-            App::<MacOSDelegate<Delegate, State>, Event>::dispatch_main(Event::ButtonClicked(id));
+        let state = self.checked.as_state().unwrap().clone();
+        checkbox.set_action(move || {
+            let is_checked = !state.clone_inner();
+            state.set(is_checked);
+
+            App::<MacOSDelegate<Delegate, State>, Event>::dispatch_main(Event::CheckboxChanged(id, is_checked));
         });
-        button.into()
+        checkbox.into()
     }
 
     /// Internal API: creates a native view (for Win32).
@@ -128,24 +136,24 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Button<State
     ) -> crate::platform::win32::view::WinView {
         use crate::{platform::win32::view::{WinButton, WinView, WinViewKind}, ViewId};
 
-        let button = self.text.with(|text| {
+        let checkbox = self.text.with(|text| {
             WinButton::new(parent, text)
         });
 
-        button.as_ref().subscribe_text_update(self.text.as_state());
+        checkbox.as_ref().subscribe_text_update(self.text.as_state());
 
-        let id = ViewId(button.as_ref().get_control_id().0 as _);
+        let id = ViewId(checkbox.as_ref().get_control_id().0 as _);
 
         let map = std::mem::take(&mut self.event_handler_map);
         tree.put_event_handlers_with_id(id, map);
 
-        WinView::new(id, WinViewKind::Button(button))
+        WinView::new(id, WinViewKind::Button(checkbox))
     }
 }
 
-impl<Delegate, State> From<Button<State>> for Box<dyn View<Delegate, State>>
+impl<Delegate, State> From<Checkbox<State>> for Box<dyn View<Delegate, State>>
         where Delegate: AppDelegate<State> + 'static, State: 'static {
-    fn from(value: Button<State>) -> Self {
+    fn from(value: Checkbox<State>) -> Self {
         Box::new(value)
     }
 }

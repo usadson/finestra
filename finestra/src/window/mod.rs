@@ -28,7 +28,7 @@ impl Window {
     /// properties, before calling [`DialogBuilder::show()`].
     ///
     /// ## Example
-    /// ```rust,ignore
+    /// ```rust,no_run,ignore
     /// # use finestra::Window;
     /// let window: Window;
     ///

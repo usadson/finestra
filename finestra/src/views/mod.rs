@@ -3,6 +3,7 @@
 
 mod base;
 mod button;
+mod checkbox;
 mod image;
 mod label;
 mod stack;
@@ -13,6 +14,7 @@ use crate::AppDelegate;
 
 pub use self::base::*;
 pub use self::button::Button;
+pub use self::checkbox::Checkbox;
 pub use self::image::*;
 pub use self::label::Label;
 pub use self::stack::{Stack, StackDirection};

@@ -133,6 +133,18 @@ impl<Delegate, State> Dispatcher for MacOSDelegate<Delegate, State>
                 (handler)(&mut state, window);
             }
 
+            Event::CheckboxChanged(view_id, is_checked) => {
+                let Some(handler) = self.event_registry.map.get(&view_id) else {
+                    return;
+                };
+
+                let Some(handler) = &handler.checked else {
+                    return;
+                };
+
+                (handler)(&mut state, is_checked, window);
+            }
+
             Event::TextFieldChanged(view_id, text) => {
                 let Some(handler) = self.event_registry.map.get(&view_id) else {
                     return;

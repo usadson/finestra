@@ -44,6 +44,19 @@ pub trait ButtonExtensions: Layout {
             let _: () = msg_send![obj, setBezelColor: color];
         });
     }
+
+    fn set_button_type(&self, type_: NSButtonType) {
+        let type_ = type_ as u32;
+
+        self.with_backing_obj_mut(|obj| unsafe {
+            let _: () = msg_send![obj, setButtonType:type_];
+        });
+    }
 }
 
 impl ButtonExtensions for cacao::button::Button {}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum NSButtonType {
+    Switch = 3,
+}
