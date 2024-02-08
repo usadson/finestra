@@ -1,7 +1,11 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
+mod platform;
+
 use crate::{View, Window, WindowConfiguration};
+
+pub use self::platform::UIBackend;
 
 /// This is the main entrypoint to the framework.
 ///
@@ -11,6 +15,7 @@ use crate::{View, Window, WindowConfiguration};
 /// app.run();
 /// ```
 pub struct App<Delegate, State=()> {
+    backend: UIBackend,
     pub(crate) delegate: Delegate,
     pub(crate) state: State,
 }
@@ -19,6 +24,7 @@ impl<Delegate, State: 'static> App<Delegate, State>
         where Delegate: AppDelegate<State> + 'static {
     pub fn new(delegate: Delegate) -> App<Delegate, ()> {
         App {
+            backend: Default::default(),
             delegate,
             state: (),
         }
@@ -26,9 +32,18 @@ impl<Delegate, State: 'static> App<Delegate, State>
 
     pub fn with_state<NewState>(delegate: Delegate, state: NewState) -> App<Delegate, NewState> {
         App {
+            backend: Default::default(),
             delegate,
             state,
         }
+    }
+
+    /// Override the [`UIBackend`] for this application. Note that the default
+    /// is already the most appropriate for the platform, but you can still
+    /// override that behavior if you'd like.
+    pub fn with_backend(mut self, backend: UIBackend) -> Self {
+        self.backend = backend;
+        self
     }
 }
 
@@ -40,14 +55,23 @@ impl<Delegate, State> App<Delegate, State>
     }
 
     pub fn run(self) -> ! {
-        #[cfg(target_os = "macos")]
-        { crate::platform::macos::run_app(self) }
+        match self.backend {
+            UIBackend::AppKit => {
+                #[cfg(target_os = "macos")]
+                { crate::platform::macos::run_app(self) }
 
-        #[cfg(target_os = "windows")]
-        { crate::platform::win32::run_app(self) }
+                #[cfg(not(target_os = "macos"))]
+                { panic!("The UIBackend::AppKit is not supported on this platform.") }
+            }
 
-        #[cfg(not(any(target_os = "macos", target_os = "windows")))]
-        { panic!("Invalid platform") }
+            UIBackend::Win32 => {
+                #[cfg(target_os = "windows")]
+                { crate::platform::win32::run_app(self) }
+
+                #[cfg(not(target_os = "windows"))]
+                { panic!("The UIBackend::Win32 is not supported on this platform.") }
+            }
+        }
     }
 }
 
