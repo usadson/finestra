@@ -15,23 +15,25 @@ use crate::{AppContext, UIBackend};
 ///     println!("Hello, world!");
 /// });
 ///
-/// timer.schedule();
+/// timer.schedule_once();
 /// ```
-pub struct Timer {
+pub struct Timer<F: FnOnce()> {
     pub(crate) delay: Duration,
-    pub(crate) action: Box<dyn Fn()>,
+    pub(crate) action: Box<F>,
 }
 
-impl Timer {
+impl<F> Timer<F>
+        where F: FnOnce() + 'static {
     /// Create a new [`Timer`] that will fire after the given delay.
-    pub fn delayed_action<F: Fn() + 'static>(delay: Duration, f: F) -> Self {
+    pub fn delayed_action(delay: Duration, f: F) -> Self {
         Self {
             delay,
             action: Box::new(f),
         }
     }
 
-    pub fn schedule(self) {
+    pub fn schedule_once(self)
+            where F: Send {
         match AppContext::backend() {
             UIBackend::AppKit => schedule_app_kit(self),
             UIBackend::Win32 => schedule_win32(self),
@@ -40,26 +42,33 @@ impl Timer {
 }
 
 #[cfg(target_os = "macos")]
-fn schedule_app_kit(timer: Timer) {
+fn schedule_app_kit<F: FnOnce() + 'static>(timer: Timer<F>) {
     use crate::platform::macos::NSTimer;
 
     NSTimer::from(timer).run();
 }
 
 #[cfg(not(target_os = "macos"))]
-fn schedule_app_kit(timer: Timer) {
-    _ = timer;
-    panic!("AppKit Timers are not available on this platform.");
+fn schedule_app_kit<F: FnOnce() + Send + 'static>(timer: Timer<F>) {
+    default_schedule_timer(timer);
 }
 
 #[cfg(target_os = "windows")]
-fn schedule_win32(timer: Timer) {
-    _ = timer;
+fn schedule_win32<F: FnOnce() + 'static>(timer: Timer<F>) {
     todo!();
 }
 
 #[cfg(not(target_os = "windows"))]
-fn schedule_win32(timer: Timer) {
-    _ = timer;
-    panic!("Win32 Timers are not available on this platform.");
+fn schedule_win32<F: FnOnce() + Send + 'static>(timer: Timer<F>) {
+    default_schedule_timer(timer);
+}
+
+fn default_schedule_timer<F: FnOnce() + Send + 'static>(timer: Timer<F>) {
+    std::thread::Builder::new()
+        .name("Finestra Timer Thread".into())
+        .spawn(move || {
+            std::thread::sleep(timer.delay);
+            (timer.action)();
+        })
+        .unwrap();
 }

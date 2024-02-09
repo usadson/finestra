@@ -1,7 +1,7 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use std::time::Duration;
+use std::{ffi::c_void, time::Duration};
 
 use block::ConcreteBlock;
 use cacao::{foundation::NO, objc::{class, msg_send, runtime::Object, sel, sel_impl}};
@@ -19,16 +19,24 @@ impl NSTimer {
     }
 }
 
-impl From<Timer> for NSTimer {
-    fn from(timer: Timer) -> Self {
+impl<F> From<Timer<F>> for NSTimer
+        where F: FnOnce() + 'static {
+    fn from(timer: Timer<F>) -> Self {
         let interval = convert_ns_time_interval(timer.delay);
         let action = timer.action;
 
-        let block = ConcreteBlock::new(
-            move |timer: *mut Object| {
-                _ = timer;
+        let action: *mut dyn FnOnce() = {
+            Box::into_raw(action)
+        };
 
-                (action)();
+        let block = ConcreteBlock::new(
+            move |_: *mut Object| {
+                unsafe {
+                    let action: *mut dyn Fn() = std::mem::transmute(action);
+                    (*action)();
+                }
+
+                _ = unsafe { Box::from_raw(action) };
             }
         );
 

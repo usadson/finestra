@@ -15,7 +15,7 @@ impl AppDelegate for Application {
                 Timer::delayed_action(Duration::from_secs(1), move || {
                     window.create_dialog("Hello, world!")
                         .show();
-                }).schedule();
+                }).schedule_once();
             })
     }
 }

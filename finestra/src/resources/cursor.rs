@@ -45,7 +45,7 @@ impl Cursor {
         let cursor = self.clone();
         Timer::delayed_action(duration, move || {
             cursor.pop_internal();
-        }).schedule();
+        }).schedule_once();
     }
 }
 
