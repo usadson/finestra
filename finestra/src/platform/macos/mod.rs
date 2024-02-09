@@ -4,6 +4,7 @@
 pub(crate) mod cacao_delegates;
 mod dynamic_wrapper;
 pub(crate) mod extensions;
+pub(crate) mod objc;
 pub(crate) mod resources;
 pub(crate) mod state;
 pub(crate) mod views;
@@ -24,6 +25,7 @@ use crate::{App, AppDelegate, DialogBuilder, View, Window, WindowDelegator};
 pub(crate) use self::dynamic_wrapper::DynamicViewWrapper;
 pub(crate) use self::dynamic_wrapper::LayoutExt;
 use self::extensions::WindowExtensions;
+pub(crate) use self::objc::*;
 use self::state::Event;
 pub(crate) use self::views::*;
 

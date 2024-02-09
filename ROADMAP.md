@@ -68,6 +68,8 @@
 ## 2. Window + Views
 - [ ] Changing Cursor
 - [ ] Drag and Drop
+- [x] Timer (delay)
+- [ ] Timer (repeaat)
 
 ## 3. Platform Support
 - [x] macOS/AppKit

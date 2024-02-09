@@ -116,6 +116,7 @@ dependencies = [
 name = "finestra"
 version = "0.2.0"
 dependencies = [
+ "block",
  "cacao",
  "dashmap",
  "euclid",

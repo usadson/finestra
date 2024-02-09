@@ -3,6 +3,8 @@
 
 mod color;
 mod image;
+mod timer;
 
 pub use self::color::*;
 pub use self::image::*;
+pub use self::timer::*;

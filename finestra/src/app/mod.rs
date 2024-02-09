@@ -1,11 +1,13 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
+mod context;
 mod platform;
 
 use crate::{View, Window, WindowConfiguration};
 
 pub use self::platform::UIBackend;
+pub(crate) use self::context::*;
 
 /// This is the main entrypoint to the framework. You have to implement the
 /// [`AppDelegate`] to get notified of specific app lifecycle events.
@@ -109,6 +111,8 @@ impl<Delegate, State> App<Delegate, State>
     /// [`AppDelegate::did_launch()`] to signify the application was made aware
     /// of to the platform.
     pub fn run(self) -> ! {
+        AppContext::initialize(&self);
+
         match self.backend {
             UIBackend::AppKit => {
                 #[cfg(target_os = "macos")]
