@@ -8,10 +8,14 @@ use crate::{AppContext, UIBackend};
 /// Use this timer to delay a certain action.
 ///
 /// ```
-/// #use finestra::Timer;
+/// # use finestra::Timer;
 /// use std::time::Duration;
 ///
-/// let timer = Timer::delayed_action(Dur)
+/// let timer = Timer::delayed_action(Duration::from_secs(1), || {
+///     println!("Hello, world!");
+/// });
+///
+/// timer.schedule();
 /// ```
 pub struct Timer {
     pub(crate) delay: Duration,
@@ -19,6 +23,7 @@ pub struct Timer {
 }
 
 impl Timer {
+    /// Create a new [`Timer`] that will fire after the given delay.
     pub fn delayed_action<F: Fn() + 'static>(delay: Duration, f: F) -> Self {
         Self {
             delay,

@@ -66,7 +66,7 @@
 - [ ] Dispatch to UI Thread
 
 ## 2. Window + Views
-- [ ] Changing Cursor
+- [x] Changing Cursor
 - [ ] Drag and Drop
 - [x] Timer (delay)
 - [ ] Timer (repeaat)
