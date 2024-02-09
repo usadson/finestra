@@ -55,7 +55,8 @@ fn schedule_app_kit<F: FnOnce() + Send + 'static>(timer: Timer<F>) {
 
 #[cfg(target_os = "windows")]
 fn schedule_win32<F: FnOnce() + 'static>(timer: Timer<F>) {
-    todo!();
+    // TODO
+    default_schedule_timer(timer);
 }
 
 #[cfg(not(target_os = "windows"))]

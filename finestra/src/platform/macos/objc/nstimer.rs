@@ -1,7 +1,7 @@
 // Copyright (C) 2024 Tristan Gerritsen <tristan@thewoosh.org>
 // All Rights Reserved.
 
-use std::{ffi::c_void, time::Duration};
+use std::time::Duration;
 
 use block::ConcreteBlock;
 use cacao::{foundation::NO, objc::{class, msg_send, runtime::Object, sel, sel_impl}};
