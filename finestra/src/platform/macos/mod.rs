@@ -73,7 +73,7 @@ impl<Delegate, State: 'static> CacaoAppDelegate for MacOSDelegate<Delegate, Stat
     fn did_finish_launching(&self) {
         CacaoApp::activate();
 
-        let user_delegator = Window::new(Rc::new(MacOSWindowDelegator {
+        let user_delegator = Window::new(Arc::new(MacOSWindowDelegator {
             window: Rc::clone(&self.window),
         }));
 
@@ -118,7 +118,7 @@ impl<Delegate, State> Dispatcher for MacOSDelegate<Delegate, State>
     fn on_ui_message(&self, message: Event) {
         let mut state = self.state.lock().unwrap();
 
-        let window = Window::new(Rc::new(MacOSWindowDelegator {
+        let window = Window::new(Arc::new(MacOSWindowDelegator {
             window: Rc::clone(&self.window),
         }));
 
@@ -182,7 +182,7 @@ impl<Delegate, State> WindowDelegate for MacOSWindowDelegate<Delegate, State>
         let window = Rc::new(window);
         debug_assert!(self.window.is_none());
 
-        let user_delegator = Window::new(Rc::new(MacOSWindowDelegator {
+        let user_delegator = Window::new(Arc::new(MacOSWindowDelegator {
             window: Rc::clone(&window),
         }));
 

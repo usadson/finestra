@@ -5,7 +5,7 @@ mod config;
 mod dialog;
 
 use std::borrow::Cow;
-use std::rc::Rc;
+use std::sync::Arc;
 
 pub use self::config::*;
 pub use self::dialog::*;
@@ -14,11 +14,11 @@ pub use self::dialog::*;
 //           window by user code.
 #[derive(Clone)]
 pub struct Window {
-    delegator: Rc<dyn WindowDelegator>,
+    delegator: Arc<dyn WindowDelegator>,
 }
 
 impl Window {
-    pub(crate) fn new(delegator: Rc<dyn WindowDelegator>) -> Self {
+    pub(crate) fn new(delegator: Arc<dyn WindowDelegator>) -> Self {
         Self {
             delegator,
         }
@@ -45,3 +45,6 @@ impl Window {
 pub(crate) trait WindowDelegator {
     fn create_dialog(&self, text: Cow<'static, str>) -> DialogBuilder;
 }
+
+unsafe impl Send for Window {}
+unsafe impl Sync for Window {}

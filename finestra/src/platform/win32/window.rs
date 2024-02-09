@@ -4,7 +4,7 @@
 use std::ffi::c_void;
 use std::marker::PhantomData;
 use std::mem::size_of_val;
-use std::rc::Rc;
+use std::sync::Arc;
 use std::{mem::size_of, sync::Once};
 
 use windows::core::PCSTR;
@@ -58,7 +58,7 @@ impl<Delegate, State> Window<Delegate, State>
             hwnd,
             delegate,
             state,
-            delegator: crate::Window::new(Rc::new(Self::from(hwnd))),
+            delegator: crate::Window::new(Arc::new(Self::from(hwnd))),
             view: None,
             registry: Default::default(),
         });
