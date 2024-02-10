@@ -6,11 +6,22 @@ use cacao::{
     color::Color,
     foundation::{id, NSString, NO, YES},
     layout::Layout,
-    objc::{msg_send, sel, sel_impl}
+    objc::{class, msg_send, sel, sel_impl}
 };
+
+use crate::Theme;
+
+extern "C" {
+    static NSAppearanceNameAqua: id;
+    static NSAppearanceNameDarkAqua: id;
+}
 
 pub trait WindowExtensions {
     fn get_title(&self) -> String;
+    fn set_appearance(&self, theme: Theme);
+
+    #[allow(unused)]
+    fn get_appearance(&self) -> Theme;
 }
 
 impl<T> WindowExtensions for CacaoWindow<T> {
@@ -20,6 +31,45 @@ impl<T> WindowExtensions for CacaoWindow<T> {
         };
 
         title.to_string()
+    }
+
+    // https://developer.apple.com/documentation/appkit/nsappearancecustomization/1533925-appearance
+    fn set_appearance(&self, theme: Theme) {
+        let appearance = theme_to_ns_appearance(theme);
+
+        let _: () = unsafe {
+            msg_send![&*self.objc, setAppearance:appearance]
+        };
+    }
+
+    fn get_appearance(&self) -> Theme {
+        let appearance: id = unsafe {
+            msg_send![&*self.objc, effectiveAppearance]
+        };
+
+        if appearance == unsafe { NSAppearanceNameAqua } {
+            return Theme::Light;
+        }
+
+        if appearance == unsafe { NSAppearanceNameDarkAqua } {
+            return Theme::Dark;
+        }
+
+        Theme::Automatic // todo
+    }
+}
+
+// https://developer.apple.com/documentation/appkit/nsappearance/1529612-appearancenamed?
+fn theme_to_ns_appearance(theme: Theme) -> id {
+    let name = match theme {
+        Theme::Automatic => return 0 as _,
+
+        Theme::Light => unsafe { NSAppearanceNameAqua },
+        Theme::Dark => unsafe { NSAppearanceNameDarkAqua },
+    };
+
+    unsafe {
+        msg_send![class!(NSAppearance), appearanceNamed:name]
     }
 }
 

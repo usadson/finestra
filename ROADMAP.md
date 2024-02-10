@@ -54,7 +54,7 @@
 
 #### 1.3.1. Theming
 - [x] Honor System Theme by Default
-- [ ] Overriding Light/Dark Mode
+- [x] Overriding Light/Dark Mode
 
 ### 1.5. Miscellaneous
 - [ ] Accessibility
@@ -69,7 +69,7 @@
 - [x] Changing Cursor
 - [ ] Drag and Drop
 - [x] Timer (delay)
-- [ ] Timer (repeaat)
+- [ ] Timer (repeat)
 
 ## 3. Platform Support
 - [x] macOS/AppKit

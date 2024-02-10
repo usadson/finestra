@@ -21,7 +21,7 @@ use cacao::notification_center::Dispatcher;
 
 use crate::event::{EventHandlerMapRegistry, ViewTree};
 use crate::platform::macos::cacao_delegates::StatefulEventDispatcher;
-use crate::{App, AppDelegate, DialogBuilder, View, Window, WindowDelegator};
+use crate::{App, AppDelegate, DialogBuilder, StateChangeOrigin, View, Window, WindowDelegator};
 pub(crate) use self::dynamic_wrapper::DynamicViewWrapper;
 pub(crate) use self::dynamic_wrapper::LayoutExt;
 use self::extensions::WindowExtensions;
@@ -90,9 +90,20 @@ impl<Delegate, State: 'static> CacaoAppDelegate for MacOSDelegate<Delegate, Stat
 
         if let Some(state) = config.title.as_ref().as_state() {
             let window = self.window.clone();
-            state.add_listener(move |value| {
+            state.add_listener_with_origin(move |value| {
                 window.set_title(value);
-            });
+            }, StateChangeOrigin::System);
+        }
+
+        config.theme.with(|theme| {
+            self.window.set_appearance(*theme);
+        });
+
+        if let Some(state) = config.theme.as_state() {
+            let window = self.window.clone();
+            state.add_listener_with_origin(move |theme| {
+                window.set_appearance(*theme);
+            }, StateChangeOrigin::System);
         }
 
         if config.width != 0.0 && config.height != 0.0 {

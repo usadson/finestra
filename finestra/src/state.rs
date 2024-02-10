@@ -3,13 +3,17 @@
 
 use std::{fmt::Debug, sync::{Arc, RwLock}};
 
-use crate::{Color, SystemColor, ViewId};
+use crate::{Color, SystemColor, Theme, ViewId};
 
 /// A [`State`]ful [`Color`].
 pub type ColorValue = State<Color>;
 
 /// A [`State`]ful [`String`].
 pub type TextValue = State<String>;
+
+/// A [`State`]ful [`Theme`](Theme).
+pub type ThemeValue = State<Theme>;
+
 type Callback<T> = dyn Fn(&T);
 
 /// The [`State`] primitive is the tool to modify the characteristics of

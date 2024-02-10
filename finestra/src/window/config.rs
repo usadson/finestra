@@ -3,7 +3,7 @@
 
 use euclid::Size2D;
 
-use crate::{Number, StateOrRaw};
+use crate::{Number, StateOrRaw, Theme};
 
 
 #[derive(Default)]
@@ -11,6 +11,7 @@ pub struct WindowConfiguration {
     pub(crate) title: TitleWrapper,
     pub(crate) width: Number,
     pub(crate) height: Number,
+    pub(crate) theme: StateOrRaw<Theme>,
 }
 
 impl WindowConfiguration {
@@ -33,6 +34,15 @@ impl WindowConfiguration {
     pub fn with_title(self, title: impl Into<StateOrRaw<String>>) -> Self {
         Self {
             title: TitleWrapper(title.into()),
+            ..self
+        }
+    }
+
+    /// Use the specified theme for the window.
+    #[must_use]
+    pub fn with_theme(self, theme: impl Into<StateOrRaw<Theme>>) -> Self {
+        Self {
+            theme: theme.into(),
             ..self
         }
     }
