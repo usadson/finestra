@@ -1,5 +1,5 @@
 # Finestra
-[![CI](https://github.com/usadson/finestra/actions/workflows/ci.yml/badge.svg)](https://github.com/usadson/finestra/actions/workflows/ci.yml) ![Crates.io Version](https://img.shields.io/crates/v/finestra) ![GitHub License](https://img.shields.io/github/license/usadson/finestra)
+[![CI](https://github.com/usadson/finestra/actions/workflows/ci.yml/badge.svg)](https://github.com/usadson/finestra/actions/workflows/ci.yml) [![Crates.io Version](https://img.shields.io/crates/v/finestra)](https://crates.io/crates/finestra) [![GitHub License](https://img.shields.io/github/license/usadson/finestra)](https://github.com/usadson/finestra/blob/main/COPYING)
 
 Finestra is a simple and practical desktop UI framework for Rust. It maintains the authentic look and feel of each platform by integrating with their native UI backends. With Finestra, you can write an application that targets both Windows and macOS.
 
