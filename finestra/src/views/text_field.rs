@@ -4,6 +4,7 @@
 use crate::*;
 use super::base::BaseView;
 
+/// A text field is a view that the user can enter text into.
 pub struct TextField<State> {
     pub(crate) base: ViewBase,
     pub(crate) text: StateOrRaw<String>,
@@ -25,21 +26,27 @@ impl<State> TextField<State> {
         }
     }
 
+    /// Get notified when the text is changed.
     pub fn set_on_change(&mut self, action: impl Fn(&mut State, String, Window) + 'static) {
         self.event_handler_map.text_changed = Some(Box::new(action));
     }
 
+    /// Get notified when the text is changed.
     pub fn with_on_change(mut self, action: impl Fn(&mut State, String, Window) + 'static) -> Self {
         self.set_on_change(action);
         self
     }
 
+    /// Set the placeholder of the field, which is displayed when the field is
+    /// empty (the user has no text entered (yet)).
     #[must_use]
     pub fn with_placeholder(mut self, placeholder: impl Into<StateOrRaw<String>>) -> Self {
         self.set_placeholder(placeholder);
         self
     }
 
+    /// Set the placeholder of the field, which is displayed when the field is
+    /// empty (the user has no text entered (yet)).
     pub fn set_placeholder(&mut self, placeholder: impl Into<StateOrRaw<String>>) {
         self.placeholder_text = placeholder.into();
     }

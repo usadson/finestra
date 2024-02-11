@@ -5,6 +5,20 @@ use crate::{event::EventHandlerMap, AppDelegate, Image, View, ViewBase};
 
 use super::base::BaseView;
 
+/// A view that displays an image.
+///
+/// ```
+/// # use finestra::{Image, ImageView};
+///
+/// let path = "logo.png".to_owned();
+/// let image = Image::with_contents_of_file(path);
+///
+/// let view = ImageView::new()
+///     .with(image);
+///
+///
+/// # let _: ImageView<()> = view;
+/// ```
 pub struct ImageView<State> {
     pub(crate) base: ViewBase,
     image: Image,
@@ -18,7 +32,20 @@ impl<State> Default for ImageView<State> {
 }
 
 impl<State> ImageView<State> {
-    /// Creates a new [`ImageView`].
+    /// A view that displays an image.
+    ///
+    /// ```
+    /// # use finestra::{Image, ImageView};
+    ///
+    /// let path = "logo.png".to_owned();
+    /// let image = Image::with_contents_of_file(path);
+    ///
+    /// let view = ImageView::new()
+    ///     .with(image);
+    ///
+    ///
+    /// # let _: ImageView<()> = view;
+    /// ```
     #[must_use]
     pub fn new() -> Self {
         Self {
@@ -28,11 +55,13 @@ impl<State> ImageView<State> {
         }
     }
 
+    /// Set the image of the view.
     pub fn with(mut self, image: Image) -> Self {
         self.set_image(image);
         self
     }
 
+    /// Set the image of the view.
     pub fn set_image(&mut self, image: Image) {
         self.image = image;
     }

@@ -34,10 +34,12 @@ impl<State> Button<State> {
         }
     }
 
+    /// Get notified when the button is clicked.
     pub fn set_on_click(&mut self, action: impl Fn(&mut State, Window) + 'static) {
         self.event_handler_map.click = Some(Box::new(action));
     }
 
+    /// Get notified when the button is clicked.
     pub fn with_on_click(mut self, action: impl Fn(&mut State, Window) + 'static) -> Self {
         self.event_handler_map.click = Some(Box::new(action));
         self

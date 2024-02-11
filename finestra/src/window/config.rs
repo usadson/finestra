@@ -5,7 +5,7 @@ use euclid::Size2D;
 
 use crate::{Menu, MenuBar, Number, StateOrRaw, Theme};
 
-
+/// Use this to configure the look and feel of the Window.
 #[derive(Default)]
 pub struct WindowConfiguration {
     pub(crate) title: TitleWrapper,
@@ -16,12 +16,14 @@ pub struct WindowConfiguration {
 }
 
 impl WindowConfiguration {
+    /// Use this to configure the look and feel of the Window.
     #[inline]
     #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
+    /// Change the initial size of the window.
     #[must_use]
     pub fn with_size<T>(self, size: Size2D<Number, T>) -> Self {
         Self {
@@ -31,6 +33,8 @@ impl WindowConfiguration {
         }
     }
 
+    /// Set the title of the window. You can also use a [`State`](crate::State)
+    /// to update it automatically, when you change it in your AppState.
     #[must_use]
     pub fn with_title(self, title: impl Into<StateOrRaw<String>>) -> Self {
         Self {
@@ -48,6 +52,9 @@ impl WindowConfiguration {
         }
     }
 
+    /// A menu bar is a bar containing [Menus][Menu]. Use this function to set
+    /// the menu, and react to the user invoking items using
+    /// [`AppDelegate::did_invoke_menu_action()`](crate::AppDelegate::did_invoke_menu_action).
     #[must_use]
     pub fn with_menubar(self, menubar: impl Into<MenuBar>) -> Self {
         Self {
@@ -56,6 +63,9 @@ impl WindowConfiguration {
         }
     }
 
+    /// Use this function to add a new menu, and react to the user invoking
+    /// items using
+    /// [`AppDelegate::did_invoke_menu_action()`](crate::AppDelegate::did_invoke_menu_action).
     #[must_use]
     pub fn with_menu(mut self, menu: impl Into<Menu>) -> Self {
         self.menubar.add_menu(menu);

@@ -146,7 +146,12 @@ unsafe impl<T> Sync for State<T> {}
 /// implementations.
 #[derive(Debug)]
 pub enum StateOrRaw<T> {
+    /// A raw value is a value that is applied once, but can't be updated using
+    /// the [State] pattern.
     Raw(T),
+
+    /// This value is reacted by Finestra, and potentially you, by updating the
+    /// used value (such as the text of a [Label](crate::Label)).
     State(State<T>),
 }
 

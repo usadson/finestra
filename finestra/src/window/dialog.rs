@@ -45,6 +45,8 @@ impl DialogBuilder {
     }
 }
 
+/// Specifies the kind of dialog that is shown. This helps accessibility by
+/// providing more context, and is used by Finestra to show a certain icon.
 #[derive(Clone, Debug, Default)]
 pub enum DialogKind {
     /// A message box without a specific icon or accessibility information.

@@ -151,6 +151,9 @@ pub trait AppDelegate<State = ()>
         Default::default()
     }
 
+    /// Called when the window has been configured, and allows you to set the
+    /// components that make up your window, such as [Labels](crate::Label),
+    /// [Stacks](crate::Stack), and [Buttons](crate::Button).
     fn make_content_view(&mut self, state: &mut State, window: Window) -> impl View<Self, State>
             where Self: Sized {}
 

@@ -36,10 +36,12 @@ impl<State> Checkbox<State> {
         }
     }
 
+    /// Get notified when the checkbox has been switched to on or off.
     pub fn set_on_checked(&mut self, action: impl Fn(&mut State, bool, Window) + 'static) {
         self.event_handler_map.checked = Some(Box::new(action));
     }
 
+    /// Get notified when the checkbox has been switched to on or off.
     pub fn with_on_checked(mut self, action: impl Fn(&mut State, bool, Window) + 'static) -> Self {
         self.set_on_checked(action);
         self

@@ -7,14 +7,20 @@ use crate::{AppDelegate, View, ViewBase};
 
 use super::base::BaseView;
 
+/// Set the direction the items inside a [`Stack`] should be aligned in.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum StackDirection {
+    /// Align the items horizontally, i.e. left to right.
     Horizontal,
+
+    /// Align the items vertically, i.e. top to bottom.
     Vertical,
 }
 
-/// NOTE: We require a [`Delegate`] parameter here, so [`Self::with()`] can
-///       infer type. :)
+// NOTE: We require a [`Delegate`] parameter here, so [`Self::with()`] can
+//       infer type. :)
+/// A stack can be used to place multiple items after each other, e.g.
+/// [horizontally](Stack::horizontal), or [vertically](Stack::vertical).
 pub struct Stack<State, Delegate> {
     base: ViewBase,
     _phantom: PhantomData<Delegate>,
@@ -24,6 +30,9 @@ pub struct Stack<State, Delegate> {
 }
 
 impl<State, Delegate> Stack<State, Delegate> {
+    /// A stack can be used to place multiple items after each other, e.g.
+    /// [horizontally](Stack::horizontal), or
+    /// [vertically](Stack::vertical).
     #[must_use]
     pub fn new(direction: StackDirection) -> Self {
         Self {
@@ -35,11 +44,25 @@ impl<State, Delegate> Stack<State, Delegate> {
         }
     }
 
+    /// Align the items horizontally, i.e. left to right.
+    /// This is the same as:
+    /// ```
+    /// # use finestra::{Stack, StackDirection};
+    /// # let _: Stack<(), ()> =
+    /// Stack::new(StackDirection::Horizontal);
+    /// ```
     #[must_use]
     pub fn horizontal() -> Self {
         Self::new(StackDirection::Horizontal)
     }
 
+    /// Align the items horizontally, i.e. top to bottom.
+    /// This is the same as:
+    /// ```
+    /// # use finestra::{Stack, StackDirection};
+    /// # let _: Stack<(), ()> =
+    /// Stack::new(StackDirection::Vertical);
+    /// ```
     #[must_use]
     pub fn vertical() -> Self {
         Self::new(StackDirection::Vertical)
@@ -48,6 +71,7 @@ impl<State, Delegate> Stack<State, Delegate> {
 
 impl<State: 'static, Delegate> Stack<State, Delegate>
         where Delegate: AppDelegate<State> + 'static {
+    /// Append a view to the stack.
     pub fn with(mut self, view: impl Into<Box<dyn View<Delegate, State>>>) -> Self {
         self.children.push(view.into());
         self

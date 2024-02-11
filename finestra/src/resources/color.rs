@@ -101,18 +101,43 @@ pub enum SystemColor {
     /// The default foreground color of a link.
     Link,
 
+    /// The color black.
     Black,
+
+    /// The color white.
     White,
+
+    /// The color brown.
     Brown,
+
+    /// The color blue.
     Blue,
+
+    /// The color green.
     Green,
+
+    /// The color indigo.
     Indigo,
+
+    /// The color orange.
     Orange,
+
+    /// The color pink.
     Pink,
+
+    /// The color purple.
     Purple,
+
+    /// The color red.
     Red,
+
+    /// The color teal.
     Teal,
+
+    /// The color yellow.
     Yellow,
+
+    /// The color gray.
     Gray,
 }
 

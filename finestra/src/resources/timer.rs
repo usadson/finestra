@@ -32,6 +32,7 @@ impl<F> Timer<F>
         }
     }
 
+    /// Schedule the timer to run once, indicated by the given delay.
     pub fn schedule_once(self)
             where F: Send {
         match AppContext::backend() {

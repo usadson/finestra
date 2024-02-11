@@ -5,6 +5,7 @@ use crate::{event::EventHandlerMap, AppDelegate, Color, StateOrRaw, TextAlignmen
 
 use super::base::BaseView;
 
+/// A text block is a view that can display multiple lines of text.
 pub struct TextBlock<State=()> {
     base: ViewBase,
     pub(crate) text: StateOrRaw<String>,
@@ -17,6 +18,7 @@ pub struct TextBlock<State=()> {
 }
 
 impl<State> TextBlock<State> {
+    /// A text block is a view that can display multiple lines of text.
     #[must_use]
     pub fn new(text: impl Into<StateOrRaw<String>>) -> Self {
         Self {
@@ -59,16 +61,19 @@ impl<State> TextBlock<State> {
         self.background_color = color.into();
     }
 
+    /// Set the alignment/justification of the lines.
     #[must_use]
     pub fn with_text_alignment(mut self, alignment: impl Into<StateOrRaw<TextAlignment>>) -> Self {
         self.set_text_alignment(alignment);
         self
     }
 
+    /// Set the alignment/justification of the lines.
     pub fn set_text_alignment(&mut self, alignment: impl Into<StateOrRaw<TextAlignment>>) {
         self.alignment = alignment.into();
     }
 
+    /// Align the lines to the center of this text block.
     #[must_use]
     pub fn centered(mut self) -> Self {
         self.alignment = StateOrRaw::Raw(TextAlignment::Center);

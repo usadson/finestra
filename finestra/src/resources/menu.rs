@@ -176,6 +176,7 @@ impl Menu {
     }
 }
 
+/// An item in a [`Menu`], such as "Open" and "Save" in the "File" menu.
 #[derive(Debug, Clone, PartialEq)]
 pub struct MenuItem {
     pub(crate) kind: MenuItemKind,

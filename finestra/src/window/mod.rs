@@ -12,6 +12,9 @@ pub use self::dialog::*;
 
 // Internal: this is a wrapper for invoking methods or making changes to the
 //           window by user code.
+/// A reference to a Window. Use this to perform certain actions at runtime.
+/// If you want to modify the look and feel, use]
+/// [WindowConfiguration](super::WindowConfiguration).
 #[derive(Clone)]
 pub struct Window {
     delegator: Arc<dyn WindowDelegator>,
