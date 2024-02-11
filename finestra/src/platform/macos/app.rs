@@ -23,6 +23,33 @@ pub(crate) struct MacOSDelegate<Delegate, State>
     pub(super) state: Arc<Mutex<State>>,
 }
 
+impl<Delegate: AppDelegate<State> + 'static, State: 'static> MacOSDelegate<Delegate, State> {
+    pub fn new(
+        delegate: Delegate,
+        state: State,
+    ) -> Self {
+        let delegate = Rc::new(RefCell::new(delegate));
+        let event_registry = EventHandlerMapRegistry::default();
+        let state = Arc::new(Mutex::new(state));
+
+        let window_delegate = MacOSWindowDelegate::new(
+            Rc::clone(&delegate),
+            event_registry.clone(),
+            Arc::clone(&state)
+        );
+
+        Self {
+            delegate,
+            event_registry,
+            state,
+
+            window: Rc::new(
+                CacaoWindow::with(Default::default(), window_delegate)
+            ),
+        }
+    }
+}
+
 impl<Delegate, State: 'static> CacaoAppDelegate for MacOSDelegate<Delegate, State>
         where Delegate: AppDelegate<State> + 'static {
     fn did_finish_launching(&self) {
