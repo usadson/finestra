@@ -37,15 +37,7 @@ pub(crate) fn run_app<Delegate, State>(app: App<Delegate, State>) -> !
     let state = Arc::new(Mutex::new(app.state));
     let macos_delegate = MacOSDelegate {
         delegate: Rc::clone(&delegate),
-        window: Rc::new(CacaoWindow::with(Default::default(), MacOSWindowDelegate {
-            delegate: Rc::clone(&delegate),
-            delegator: None,
-            window: None,
-            view: Default::default(),
-            content: Default::default(),
-            event_registry: event_registry.clone(),
-            state: Arc::clone(&state)
-        })),
+        window: Rc::new(CacaoWindow::with(Default::default(), MacOSWindowDelegate::new(Rc::clone(&delegate), event_registry.clone(), Arc::clone(&state)))),
         event_registry,
         state,
     };

@@ -19,15 +19,33 @@ use super::appkit::NSAlert;
 
 pub(super) struct MacOSWindowDelegate<Delegate, State>
         where State: 'static {
-    pub(super) delegate: Rc<RefCell<Delegate>>,
-    pub(super) window: Option<Rc<CacaoWindow>>,
+    delegate: Rc<RefCell<Delegate>>,
+    window: Option<Rc<CacaoWindow>>,
 
     #[allow(unused)]
-    pub(super) delegator: Option<Window>,
-    pub(super) view: cacao::view::View,
-    pub(super) content: Option<DynamicViewWrapper>,
-    pub(super) event_registry: EventHandlerMapRegistry<State>,
-    pub(super) state: Arc<Mutex<State>>,
+    delegator: Option<Window>,
+    view: cacao::view::View,
+    content: Option<DynamicViewWrapper>,
+    event_registry: EventHandlerMapRegistry<State>,
+    state: Arc<Mutex<State>>,
+}
+
+impl<Delegate: AppDelegate<State>, State> MacOSWindowDelegate<Delegate, State> {
+    pub(super) fn new(
+        delegate: Rc<RefCell<Delegate>>,
+        event_registry: EventHandlerMapRegistry<State>,
+        state: Arc<Mutex<State>>,
+    ) -> Self {
+        Self {
+            delegate,
+            delegator: None,
+            window: None,
+            view: Default::default(),
+            content: Default::default(),
+            event_registry,
+            state,
+        }
+    }
 }
 
 impl<Delegate, State> WindowDelegate for MacOSWindowDelegate<Delegate, State>
