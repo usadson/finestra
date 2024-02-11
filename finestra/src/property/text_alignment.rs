@@ -12,7 +12,7 @@ pub enum TextAlignment {
 }
 
 #[cfg(target_os = "macos")]
-impl crate::platform::macos::resources::ToCacao<cacao::text::TextAlign> for TextAlignment {
+impl crate::platform::macos::ToCacao<cacao::text::TextAlign> for TextAlignment {
     fn to_cacao(&self) -> cacao::text::TextAlign {
         match self {
             Self::Default => cacao::text::TextAlign::Natural,

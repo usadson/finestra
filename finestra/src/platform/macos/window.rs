@@ -15,7 +15,7 @@ use crate::{AppDelegate, DialogBuilder, View, Window, WindowDelegator};
 use super::dynamic_wrapper::DynamicViewWrapper;
 use super::dynamic_wrapper::LayoutExt;
 use super::extensions::WindowExtensions;
-use super::views::NSAlert;
+use super::appkit::NSAlert;
 
 pub(super) struct MacOSWindowDelegate<Delegate, State>
         where State: 'static {

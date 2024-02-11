@@ -91,11 +91,7 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Checkbox<Sta
     #[cfg(target_os = "macos")]
     fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
         use cacao::{appkit::App, button::BezelStyle};
-        use crate::platform::macos::extensions::{ButtonExtensions, NSButtonType};
-
-        use crate::platform::macos::{
-            resources::ToCacao, state::Event, MacOSDelegate
-        };
+        use crate::platform::macos::{ButtonExtensions, Event, MacOSDelegate, NSButtonType, ToCacao};
 
         let map = std::mem::take(&mut self.event_handler_map);
         let id = tree.exchange_events_for_id(map);

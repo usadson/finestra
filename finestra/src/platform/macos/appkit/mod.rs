@@ -2,9 +2,13 @@
 // All Rights Reserved.
 
 mod nsalert;
-pub(crate) mod nsstackview;
+mod nsstackview;
+mod nstimer;
+mod menu;
 
 pub(crate) use self::{
     nsalert::NSAlert,
     nsstackview::NSStackView,
+    nstimer::NSTimer,
+    menu::set_menu_bar,
 };

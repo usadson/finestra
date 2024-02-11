@@ -39,7 +39,7 @@ impl<Delegate, State: 'static> CacaoAppDelegate for MacOSDelegate<Delegate, Stat
             self.delegate.as_ref().borrow_mut().configure_main_window(&mut state)
         };
 
-        super::menu::set_menu_bar::<Delegate, State>(config.menubar);
+        super::set_menu_bar::<Delegate, State>(config.menubar);
 
         config.title.as_ref().with(|title| {
             self.window.set_title(title);

@@ -12,9 +12,9 @@ use cacao::appkit::menu::{
 
 use crate::{AppDelegate, Menu, MenuBar, MenuItem, MenuItemKind};
 
-use super::{state::Event, MacOSDelegate};
+use super::super::{state::Event, MacOSDelegate};
 
-pub(super) fn set_menu_bar<Delegate, State>(mut menubar: MenuBar)
+pub(crate) fn set_menu_bar<Delegate, State>(mut menubar: MenuBar)
         where Delegate: AppDelegate<State> + 'static, State: 'static {
     Wrapper::<Delegate, State>::fill_appropriate_menus(&mut menubar);
     let menubar = Wrapper::<Delegate, State>::convert_menubar(menubar);

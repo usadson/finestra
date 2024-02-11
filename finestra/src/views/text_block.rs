@@ -90,7 +90,7 @@ impl<Delegate, State: 'static> View<Delegate, State> for TextBlock<State>
         where Delegate: AppDelegate<State> {
     #[cfg(target_os = "macos")]
     fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
-        use crate::platform::macos::resources::ToCacao;
+        use crate::platform::macos::ToCacao;
 
         let view_id = tree.exchange_events_for_id(Default::default());
 

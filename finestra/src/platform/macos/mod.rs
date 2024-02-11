@@ -2,21 +2,21 @@
 // All Rights Reserved.
 
 mod app;
-pub(crate) mod cacao_delegates;
+mod appkit;
+pub mod cacao_delegates;
 mod dynamic_wrapper;
-pub(crate) mod extensions;
-pub(crate) mod objc;
-pub(crate) mod resources;
-mod menu;
+mod extensions;
+mod resources;
 pub(crate) mod state;
-pub(crate) mod views;
-pub(crate) mod window;
+mod window;
 
 pub(crate) use self::app::MacOSDelegate;
+pub(crate) use self::appkit::*;
+pub(crate) use self::extensions::*;
+pub(crate) use self::state::Event;
+pub(crate) use self::resources::ToCacao;
 pub(crate) use self::dynamic_wrapper::DynamicViewWrapper;
 pub(crate) use self::dynamic_wrapper::LayoutExt;
-pub(crate) use self::objc::*;
-pub(crate) use self::views::*;
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -30,10 +30,8 @@ use self::window::MacOSWindowDelegate;
 
 const BUNDLE_ID: &str = "com.tristangerritsen.finestra";
 
-pub fn run_app<Delegate, State>(app: App<Delegate, State>) -> !
-        where Delegate: AppDelegate<State> + 'static,
-              State: 'static {
-
+pub(crate) fn run_app<Delegate, State>(app: App<Delegate, State>) -> !
+        where Delegate: AppDelegate<State> + 'static, State: 'static {
     let event_registry = EventHandlerMapRegistry::<State>::default();
     let delegate = Rc::new(RefCell::new(app.delegate));
     let state = Arc::new(Mutex::new(app.state));

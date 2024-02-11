@@ -75,7 +75,7 @@ impl<Delegate: AppDelegate<State>, State> View<Delegate, State> for Stack<State,
         where Delegate: 'static, State: 'static {
     #[cfg(target_os = "macos")]
     fn build_native(&mut self, tree: &mut crate::event::ViewTree<State>) -> crate::platform::macos::DynamicViewWrapper {
-        use crate::platform::macos::nsstackview::NSStackView;
+        use crate::platform::macos::NSStackView;
 
         let mut view = NSStackView::new(self.direction);
         for child in &mut self.children {
