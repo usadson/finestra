@@ -3,7 +3,7 @@
 
 use euclid::Size2D;
 
-use crate::{Number, StateOrRaw, Theme};
+use crate::{Menu, MenuBar, Number, StateOrRaw, Theme};
 
 
 #[derive(Default)]
@@ -12,6 +12,7 @@ pub struct WindowConfiguration {
     pub(crate) width: Number,
     pub(crate) height: Number,
     pub(crate) theme: StateOrRaw<Theme>,
+    pub(crate) menubar: MenuBar,
 }
 
 impl WindowConfiguration {
@@ -45,6 +46,20 @@ impl WindowConfiguration {
             theme: theme.into(),
             ..self
         }
+    }
+
+    #[must_use]
+    pub fn with_menubar(self, menubar: impl Into<MenuBar>) -> Self {
+        Self {
+            menubar: menubar.into(),
+            ..self
+        }
+    }
+
+    #[must_use]
+    pub fn with_menu(mut self, menu: impl Into<Menu>) -> Self {
+        self.menubar.add_menu(menu);
+        self
     }
 }
 

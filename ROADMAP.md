@@ -3,6 +3,7 @@
 ### 1.1. Window
 - [x] Main window creation
 - [ ] Sub window creation
+- [x] Menu Support
 - [ ] Icon assignment
 - [x] Changing window title
 - [ ] Dock/Task Bar Tile

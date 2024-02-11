@@ -8,7 +8,7 @@ use cacao::input::TextField as CacaoTextField;
 use cacao::text::Label as CacaoLabel;
 use cacao::image::ImageView as CacaoImageView;
 
-use crate::{BaseView, Checkbox, Color, ImageView, StateChangeOrigin, StateOrRaw, TextAlignment, TextBlock, TextField};
+use crate::{BaseView, Checkbox, Color, ImageView, MenuItem, StateChangeOrigin, StateOrRaw, TextAlignment, TextBlock, TextField};
 use crate::{event::ViewId, Button, Label};
 
 use super::resources::ToCacao;
@@ -16,6 +16,9 @@ use super::resources::ToCacao;
 #[derive(Debug)]
 pub(crate) enum Event {
     ButtonClicked(ViewId),
+    MenuAction {
+        item: MenuItem,
+    },
     TextFieldChanged(ViewId, String),
     CheckboxChanged(ViewId, bool),
 }

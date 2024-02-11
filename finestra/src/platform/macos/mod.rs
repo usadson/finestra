@@ -8,6 +8,7 @@ pub(crate) mod objc;
 pub(crate) mod resources;
 pub(crate) mod state;
 pub(crate) mod views;
+mod menu;
 
 use std::borrow::Cow;
 use std::cell::RefCell;
@@ -84,6 +85,8 @@ impl<Delegate, State: 'static> CacaoAppDelegate for MacOSDelegate<Delegate, Stat
             self.delegate.as_ref().borrow_mut().configure_main_window(&mut state)
         };
 
+        self::menu::set_menu_bar::<Delegate, State>(config.menubar);
+
         config.title.as_ref().with(|title| {
             self.window.set_title(title);
         });
@@ -156,6 +159,10 @@ impl<Delegate, State> Dispatcher for MacOSDelegate<Delegate, State>
                 };
 
                 (handler)(&mut state, is_checked, window);
+            }
+
+            Event::MenuAction { item } => {
+                self.delegate.borrow_mut().did_invoke_menu_action(item, &mut state, window);
             }
 
             Event::TextFieldChanged(view_id, text) => {

@@ -4,9 +4,11 @@
 mod color;
 mod cursor;
 mod image;
+mod menu;
 mod timer;
 
 pub use self::color::*;
 pub use self::cursor::*;
 pub use self::image::*;
+pub use self::menu::*;
 pub use self::timer::*;

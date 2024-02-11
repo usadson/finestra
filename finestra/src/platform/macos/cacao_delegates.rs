@@ -76,6 +76,10 @@ impl<State> EventDispatcher for StatefulEventDispatcher<State> {
                 (handler)(&mut state, is_checked, self.window.clone());
             }
 
+            Event::MenuAction { .. } => {
+                panic!("Menu actions aren't supposed to be dispatched to the StatefulEventDispatcher")
+            }
+
             Event::TextFieldChanged(view_id, text) => {
                 let Some(handler) = self.event_registry.map.get(&view_id) else {
                     return;

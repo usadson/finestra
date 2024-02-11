@@ -4,7 +4,7 @@
 mod context;
 mod platform;
 
-use crate::{View, Window, WindowConfiguration};
+use crate::{MenuItem, View, Window, WindowConfiguration};
 
 pub use self::platform::UIBackend;
 pub(crate) use self::context::*;
@@ -153,6 +153,13 @@ pub trait AppDelegate<State = ()>
 
     fn make_content_view(&mut self, state: &mut State, window: Window) -> impl View<Self, State>
             where Self: Sized {}
+
+    /// Called when a menu action is invoked.
+    fn did_invoke_menu_action(&mut self, item: MenuItem, state: &mut State, window: Window) {
+        _ = item;
+        _ = state;
+        _ = window;
+    }
 }
 
 impl AppDelegate<()> for () {}
