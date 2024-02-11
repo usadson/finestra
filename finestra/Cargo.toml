@@ -6,6 +6,7 @@ version.workspace = true
 authors.workspace = true
 license.workspace = true
 description.workspace = true
+include = ["../README.md", "../COPYING", "/src"]
 
 [dependencies]
 dashmap = "5"
