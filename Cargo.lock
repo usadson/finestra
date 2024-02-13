@@ -39,6 +39,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "cargo-finestra"
+version = "0.3.0"
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

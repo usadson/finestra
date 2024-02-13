@@ -1,0 +1,10 @@
+[package]
+name = "cargo-finestra"
+edition.workspace = true
+repository.workspace = true
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+description.workspace = true
+
+[dependencies]
