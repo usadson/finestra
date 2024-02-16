@@ -20,6 +20,9 @@ mod state;
 mod views;
 mod window;
 
+#[cfg(test)]
+pub mod test;
+
 pub use self::app::*;
 pub(crate) use self::layout::*;
 pub use self::property::*;

@@ -9,6 +9,7 @@ mod extensions;
 mod resources;
 pub(crate) mod state;
 mod window;
+mod xctest;
 
 pub(crate) use self::app::MacOSDelegate;
 pub(crate) use self::appkit::*;
@@ -17,6 +18,9 @@ pub(crate) use self::state::Event;
 pub(crate) use self::resources::ToCacao;
 pub(crate) use self::dynamic_wrapper::DynamicViewWrapper;
 pub(crate) use self::dynamic_wrapper::LayoutExt;
+
+#[cfg(test)]
+pub(crate) use self::xctest::*;
 
 use cacao::appkit::App as CacaoApp;
 

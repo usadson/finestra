@@ -16,6 +16,7 @@ euclid = "0.22"
 cacao = { version = "0.3", features = ["appkit"] }
 objc_id = "0.1.1"
 block = "0.1.6"
+objc_exception = "0.1.2"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 windows = { version = "0.52", features = [
