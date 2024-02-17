@@ -130,7 +130,7 @@ impl<T> State<T> {
         let value = value.into();
         let mut inner = self.inner.write().unwrap();
         for callback in &inner.callbacks {
-            if callback.origin != origin {
+            if callback.origin != origin || origin == StateChangeOrigin::User {
                 (callback.callback)(&value);
             }
         }
@@ -209,6 +209,12 @@ impl<T> From<T> for StateOrRaw<T> {
     }
 }
 
+impl From<&str> for State<String> {
+    fn from(value: &str) -> Self {
+        Self::new(value.to_owned())
+    }
+}
+
 impl From<&str> for StateOrRaw<String> {
     fn from(value: &str) -> Self {
         Self::Raw(value.to_owned())
@@ -270,4 +276,62 @@ impl From<SystemColor> for StateOrRaw<Color> {
 struct StateCallback<T> {
     callback: Box<Callback<T>>,
     origin: StateChangeOrigin,
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    use super::*;
+
+    #[test]
+    fn ensure_value_is_set_from_into() {
+        let state = State::from("Hello");
+        state.with(|val| {
+            assert_eq!(val, "Hello");
+        });
+
+        state.with_mut(|val| {
+            assert_eq!(val, "Hello");
+        });
+    }
+
+    #[test]
+    fn ensure_value_is_set_from_set() {
+        let state = State::from("World");
+        state.with(|val| {
+            assert_eq!(val, "World");
+        });
+
+        state.with_mut(|val| {
+            assert_eq!(val, "World");
+        });
+
+        state.set("Finestra");
+        state.with(|val| {
+            assert_eq!(val, "Finestra");
+        });
+
+        state.with_mut(|val| {
+            assert_eq!(val, "Finestra");
+        });
+    }
+
+    #[test]
+    fn ensure_listener() {
+        let state = State::new(1);
+
+        let usages = Arc::new(AtomicUsize::new(0));
+
+        let listener_usage = Arc::clone(&usages);
+        state.add_listener(move |_| {
+            listener_usage.fetch_add(1, Ordering::AcqRel);
+        });
+
+        state.set(59);
+        state.set(3);
+
+        state.with(|value| assert_eq!(*value, 3));
+        assert_eq!(usages.load(Ordering::Acquire), 2);
+    }
 }
